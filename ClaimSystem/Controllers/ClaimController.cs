@@ -9,5 +9,10 @@ namespace ClaimSystem.Controllers
         {
             return View();
         }
+
+        public IActionResult CreateClaim()
+        {
+            return View();
+        }
     }
 }

@@ -3,7 +3,7 @@
     public class Claim
     {
         public int ClaimID { get; set; }       // PK
-        public int LecturerID { get; set; }    // FK → Lecturer
+        public int LecturerID { get; set; }    // FK to Lecturer
         public string ModuleName { get; set; }
         public DateTime SubmissionDate { get; set; }
         public decimal HoursWorked { get; set; }

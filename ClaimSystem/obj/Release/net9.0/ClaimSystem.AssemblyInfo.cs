@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: Microsoft.AspNetCore.Identity.UI.UIFrameworkAttribute("Bootstrap5")]
 [assembly: Microsoft.Extensions.Configuration.UserSecrets.UserSecretsIdAttribute("aspnet-ClaimSystem-76dc46db-9541-46b9-b064-d3c4a9eea1b8")]
 [assembly: System.Reflection.AssemblyCompanyAttribute("ClaimSystem")]
-[assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
+[assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
 [assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b9f710a8e658edd5b2586a48338d515225b9b94c")]
 [assembly: System.Reflection.AssemblyProductAttribute("ClaimSystem")]

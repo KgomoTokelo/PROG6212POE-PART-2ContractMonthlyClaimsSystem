@@ -1,0 +1,58 @@
+﻿@model IEnumerable<ClaimSystem.Models.Claim>
+
+@{
+    ViewData["Title"] = "Claims";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Claims</h2>
+    <a asp-action="Create" class="btn btn-success">+ Submit New Claim</a>
+</div>
+
+<div class="row">
+
+    <!-- Example static card for prototype aesthetics -->
+    <div class="col-md-4 mb-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-body text-center">
+                <img src="https://via.placeholder.com/100"
+                     class="rounded-circle mb-2" alt="Lecturer Pic">
+                <h5 class="card-title">Dr. Example Lecturer</h5>
+                <p class="text-muted">Computer Science</p>
+
+                <p><strong>Module:</strong> CSC101</p>
+                <p><strong>Date:</strong> 2025-09-01</p>
+                <p><strong>Status:</strong> <span class="badge bg-success">Approved</span></p>
+                <p><strong>Hours:</strong> 12</p>
+
+                <a class="btn btn-primary btn-sm">View</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dynamic claims (real data) -->
+    @foreach (var claim in Model ?? new List<ClaimSystem.Models.Claim>())
+    {
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-body text-center">
+                    <img src="https://via.placeholder.com/100"
+                         class="rounded-circle mb-2" alt="Lecturer Pic">
+                    <h5 class="card-title">@claim.Lecturer?.Name</h5>
+                    <p class="text-muted">@claim.Lecturer?.Department</p>
+
+                    <p><strong>Module:</strong> @claim.ModuleName</p>
+                    <p><strong>Date:</strong> @claim.SubmissionDate.ToShortDateString()</p>
+                    <p>
+                        <strong>Status:</strong>
+                        <span class="badge bg-info">@claim.Status</span>
+                    </p>
+                    <p><strong>Hours:</strong> @claim.HoursWorked</p>
+
+                    <a asp-action="Details" asp-route-id="@claim.ClaimID"
+                       class="btn btn-primary btn-sm">View</a>
+                </div>
+            </div>
+        </div>
+    }
+</div>

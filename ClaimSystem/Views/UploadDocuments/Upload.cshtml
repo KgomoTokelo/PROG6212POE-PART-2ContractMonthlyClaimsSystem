@@ -1,0 +1,50 @@
+﻿@model ClaimSystem.Models.UploadDocuments
+
+@{
+    ViewData["Title"] = "Upload Supporting Document";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow-sm mt-4">
+            <div class="card-body">
+                <h4 class="card-title text-center mb-4">📎 Upload Supporting Document</h4>
+
+                <form asp-action="Upload" method="post" enctype="multipart/form-data">
+                    <!-- Claim ID -->
+                    <div class="form-group mb-3">
+                        <label asp-for="ClaimID" class="form-label">Claim ID</label>
+                        <input asp-for="ClaimID" class="form-control" placeholder="Enter Claim ID" />
+                        <span asp-validation-for="ClaimID" class="text-danger"></span>
+                    </div>
+
+                    <!-- File Upload -->
+                    <div class="form-group mb-3">
+                        <label for="fileUpload" class="form-label">Select File</label>
+                        <input type="file" class="form-control" id="fileUpload" name="fileUpload" />
+                        <small class="text-muted">Accepted formats: PDF, DOCX, JPG, PNG</small>
+                    </div>
+
+                    <!-- Upload Date (auto-filled for prototype) -->
+                    <div class="form-group mb-3">
+                        <label asp-for="UploadDate" class="form-label">Upload Date</label>
+                        <input asp-for="UploadDate" class="form-control" type="date" value="@DateTime.Now.ToString("yyyy-MM-dd")" />
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="d-flex justify-content-between mt-4">
+                        <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+                        <button type="submit" class="btn btn-primary">Upload</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
+

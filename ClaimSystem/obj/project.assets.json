@@ -5171,11 +5171,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\lab_services_student\\source\\repos\\ClaimSystem\\ClaimSystem.csproj",
+      "projectUniqueName": "C:\\Users\\lab_services_student\\Desktop\\PROG6212POE-PART-1ContractMonthlyClaimsSystem\\ClaimSystem\\ClaimSystem.csproj",
       "projectName": "ClaimSystem",
-      "projectPath": "C:\\Users\\lab_services_student\\source\\repos\\ClaimSystem\\ClaimSystem.csproj",
+      "projectPath": "C:\\Users\\lab_services_student\\Desktop\\PROG6212POE-PART-1ContractMonthlyClaimsSystem\\ClaimSystem\\ClaimSystem.csproj",
       "packagesPath": "C:\\Users\\lab_services_student\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\lab_services_student\\source\\repos\\ClaimSystem\\obj\\",
+      "outputPath": "C:\\Users\\lab_services_student\\Desktop\\PROG6212POE-PART-1ContractMonthlyClaimsSystem\\ClaimSystem\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

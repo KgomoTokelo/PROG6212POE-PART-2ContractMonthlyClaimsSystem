@@ -1,40 +1,52 @@
-﻿@{
-    ViewBag.Title = "Verify Claims Prototype";
+﻿@model IEnumerable<ClaimSystem.Models.Claim>
+@{
+    ViewData["Title"] = "Verify Claims";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <h2>Verify Claims</h2>
 
+<!-- Guidelines Section -->
+<div style="border: 1px solid #ccc; border-radius:10px; padding:15px; margin-bottom:20px; background-color:#f9f9f9;">
+    <h4>Verification Guidelines</h4>
+    <ul>
+        <li>STEM department hourly rate: <strong>R98</strong></li>
+        <li>Non-STEM department hourly rate: <strong>R88</strong></li>
+        <li>Maximum hours per claim: <strong>8 hours</strong></li>
+    </ul>
+</div>
+
 <div style="display: flex; gap: 20px; flex-wrap: wrap; margin-top: 20px;">
+    @if (Model == null || !Model.Any())
+    {
+        <div class="text-center">
+            <p class="text-muted mt-4">No claims available for verification.</p>
+        </div>
+    }
+    else
+    {
+        @foreach (var claim in Model)
+        {
+            var total = claim.HoursWorked * claim.HourlyRate;
 
-    <!-- Claim Box 1 -->
-    <div style="border: 1px solid #ccc; border-radius: 10px; padding: 15px; width: 250px; box-shadow: 2px 2px 10px rgba(0,0,0,0.1); text-align: center;">
-        <img src="https://via.placeholder.com/80" alt="Lecturer Photo" style="border-radius:50%; margin-bottom:10px;">
-        <h4>Dr. Smith</h4>
-        <p><strong>Claim ID:</strong> 001</p>
-        <p><strong>Amount:</strong> $500</p>
-        <p><strong>Description:</strong> Travel reimbursement</p>
-        <button style="padding: 8px 15px; border-radius:5px; background-color:#007bff; color:white; border:none; cursor:pointer;">Verify</button>
-    </div>
+            <div style="border: 1px solid #ccc; border-radius: 10px; padding: 15px; width: 250px; box-shadow: 2px 2px 10px rgba(0,0,0,0.1); text-align: center;">
+                <img src="https://via.placeholder.com/80" alt="Lecturer Photo" style="border-radius:50%; margin-bottom:10px;">
+                <h4>@claim.Lecturer.Name</h4>
+                <p><strong>Claim ID:</strong> @claim.ClaimID</p>
+                <p><strong>Amount:</strong> R @total</p>
+                <p><strong>Rate:</strong> R @claim.HourlyRate</p>
+                <p><strong>Module:</strong> @claim.ModuleName</p>
+                <p><strong>Hours:</strong> @claim.HoursWorked</p>
+                <p><strong>Status:</strong> <span class="badge bg-info">@claim.Status</span></p>
 
-    <!-- Claim Box 2 -->
-    <div style="border: 1px solid #ccc; border-radius: 10px; padding: 15px; width: 250px; box-shadow: 2px 2px 10px rgba(0,0,0,0.1); text-align: center;">
-        <img src="https://via.placeholder.com/80" alt="Lecturer Photo" style="border-radius:50%; margin-bottom:10px;">
-        <h4>Prof. Johnson</h4>
-        <p><strong>Claim ID:</strong> 002</p>
-        <p><strong>Amount:</strong> $750</p>
-        <p><strong>Description:</strong> Conference fees</p>
-        <button style="padding: 8px 15px; border-radius:5px; background-color:#007bff; color:white; border:none; cursor:pointer;">Verify</button>
-    </div>
+                <form asp-action="Verify" asp-route-id="@claim.ClaimID" method="post" style="display:inline;">
+                    <button type="submit" style="padding: 8px 15px; border-radius:5px; background-color:#28a745; color:white; border:none; cursor:pointer;">Verify</button>
+                </form>
 
-    <!-- Claim Box 3 -->
-    <div style="border: 1px solid #ccc; border-radius: 10px; padding: 15px; width: 250px; box-shadow: 2px 2px 10px rgba(0,0,0,0.1); text-align: center;">
-        <img src="https://via.placeholder.com/80" alt="Lecturer Photo" style="border-radius:50%; margin-bottom:10px;">
-        <h4>Dr. Lee</h4>
-        <p><strong>Claim ID:</strong> 003</p>
-        <p><strong>Amount:</strong> $300</p>
-        <p><strong>Description:</strong> Workshop materials</p>
-        <button style="padding: 8px 15px; border-radius:5px; background-color:#007bff; color:white; border:none; cursor:pointer;">Verify</button>
-    </div>
-
+                <form asp-action="Reject" asp-route-id="@claim.ClaimID" method="post" style="display:inline; margin-left:5px;">
+                    <button type="submit" style="padding: 8px 15px; border-radius:5px; background-color:#dc3545; color:white; border:none; cursor:pointer;">Reject</button>
+                </form>
+            </div>
+        }
+    }
 </div>

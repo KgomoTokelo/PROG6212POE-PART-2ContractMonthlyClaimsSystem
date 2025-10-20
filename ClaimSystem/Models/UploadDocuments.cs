@@ -1,7 +1,10 @@
-﻿namespace ClaimSystem.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace ClaimSystem.Models
 {
     public class UploadDocuments
     {
+        [Key]
         public int DocumentID { get; set; }   // PK
         public int ClaimID { get; set; }      // FK to Claim
         public string FileName { get; set; }

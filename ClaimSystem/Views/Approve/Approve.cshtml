@@ -1,75 +1,48 @@
-﻿@{
+﻿@model IEnumerable<ClaimSystem.Models.Claim>
+
+
+@{
     ViewData["Title"] = "Approve Claims";
 }
 
 <h2 class="mb-4">Claims Pending Approval</h2>
 
 <div class="row">
+    @if (Model == null || !Model.Any())
+    {
+        <div class="text-center">
+            <p class="text-muted mt-4">No claims available for approval.</p>
+        </div>
+    }
+    else
+    {
+        @foreach (var claim in Model)
+        {
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-body text-center">
+                        <img src="https://via.placeholder.com/100"
+                             class="rounded-circle mb-2" alt="Lecturer Pic">
+                        <h5 class="card-title">@claim.Lecturer.Name</h5>
+                        @{}
+                        <p class="text-muted"></p>
 
-    <!-- Example Claim 1 -->
-    <div class="col-md-4 mb-4">
-        <div class="card shadow-sm h-100">
-            <div class="card-body text-center">
-                <img src="https://via.placeholder.com/100"
-                     class="rounded-circle mb-2" alt="Lecturer Pic">
-                <h5 class="card-title">Dr. Alice Lecturer</h5>
-                <p class="text-muted">Computer Science</p>
+                        <p><strong>Module:</strong> @claim.ModuleName</p>
+                        <p><strong>Date:</strong> @claim.SubmissionDate.ToString("yyyy-MM-dd")</p>
+                        <p><strong>Status:</strong> @claim.Status</p>
+                        <p><strong>Hours:</strong> @claim.HoursWorked</p>
 
-                <p><strong>Module:</strong> CSC101</p>
-                <p><strong>Date:</strong> 2025-09-01</p>
-                <p><strong>Status:</strong> Submitted</p>
-                <p><strong>Hours:</strong> 10</p>
-
-                <div class="d-flex justify-content-center gap-2">
-                    <a class="btn btn-success btn-sm">Approve</a>
-                    <a class="btn btn-danger btn-sm">Decline</a>
+                        <div class="d-flex justify-content-center gap-2">
+                            <form asp-action="Approve" asp-route-id="@claim.ClaimID" method="post" style="display:inline;">
+                                <button type="submit" class="btn btn-success btn-sm">Approve</button>
+                            </form>
+                            <form asp-action="Decline" asp-route-id="@claim.ClaimID" method="post" style="display:inline;">
+                                <button type="submit" class="btn btn-danger btn-sm">Decline</button>
+                            </form>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-    </div>
-
-    <!-- Example Claim 2 -->
-    <div class="col-md-4 mb-4">
-        <div class="card shadow-sm h-100">
-            <div class="card-body text-center">
-                <img src="https://via.placeholder.com/100"
-                     class="rounded-circle mb-2" alt="Lecturer Pic">
-                <h5 class="card-title">Prof. Bob Lecturer</h5>
-                <p class="text-muted">Engineering</p>
-
-                <p><strong>Module:</strong> ENG202</p>
-                <p><strong>Date:</strong> 2025-09-05</p>
-                <p><strong>Status:</strong> Submitted</p>
-                <p><strong>Hours:</strong> 8</p>
-
-                <div class="d-flex justify-content-center gap-2">
-                    <a class="btn btn-success btn-sm">Approve</a>
-                    <a class="btn btn-danger btn-sm">Decline</a>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Example Claim 3 -->
-    <div class="col-md-4 mb-4">
-        <div class="card shadow-sm h-100">
-            <div class="card-body text-center">
-                <img src="https://via.placeholder.com/100"
-                     class="rounded-circle mb-2" alt="Lecturer Pic">
-                <h5 class="card-title">Ms. Carol Lecturer</h5>
-                <p class="text-muted">Business Studies</p>
-
-                <p><strong>Module:</strong> BUS301</p>
-                <p><strong>Date:</strong> 2025-09-10</p>
-                <p><strong>Status:</strong> Submitted</p>
-                <p><strong>Hours:</strong> 6</p>
-
-                <div class="d-flex justify-content-center gap-2">
-                    <a class="btn btn-success btn-sm">Approve</a>
-                    <a class="btn btn-danger btn-sm">Decline</a>
-                </div>
-            </div>
-        </div>
-    </div>
-
+        }
+    }
 </div>

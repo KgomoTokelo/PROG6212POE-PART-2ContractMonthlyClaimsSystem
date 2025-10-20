@@ -1,7 +1,10 @@
-﻿namespace ClaimSystem.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace ClaimSystem.Models
 {
     public class Approve
     {
+        [Key]
         public int ApprovalID { get; set; }   // PK
         public int ClaimID { get; set; }      // FK to claims
         public int UserID { get; set; }       // FK to User
@@ -12,5 +15,7 @@
         // Navigation
         public Claim Claim { get; set; }
         public User User { get; set; }
+
+        
     }
 }

@@ -1,7 +1,10 @@
-﻿namespace ClaimSystem.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace ClaimSystem.Models
 {
     public class Lecturer
     {
+        [Key]
         public int LecturerID { get; set; }   // PK
         public string Name { get; set; }
         public string Email { get; set; }

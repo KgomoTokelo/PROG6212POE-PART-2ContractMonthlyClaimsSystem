@@ -80,5 +80,23 @@ namespace ClaimSystem.Controllers
 
             return View(model);
         }
+
+        public async Task<IActionResult> Views(int id)
+        {
+            if (id == null) { 
+                return NotFound(); }
+
+                
+
+            var claim = await _context.Claims
+                .Include(c => c.Lecturer)
+                .Include(c => c.Documents)  // ✅ Include uploaded docs
+                .FirstOrDefaultAsync(c => c.ClaimID == id);
+
+            if (claim == null)
+                return NotFound();
+
+            return View(claim);
+        }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Design;
 
 namespace ClaimSystem.Models
 {
@@ -12,6 +13,8 @@ namespace ClaimSystem.Models
         public DbSet<Approve> Approves { get; set; }
         public DbSet<Lecturer> Lecturers { get; set; }
         public DbSet<UploadDocuments> UploadDocuments { get; set; }
+
+        
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -27,7 +30,18 @@ namespace ClaimSystem.Models
             
             
         }
-        
+
+        public class ApplicationDbContextFactory : IDesignTimeDbContextFactory<ApplicationDbContext>
+        {
+            public ApplicationDbContext CreateDbContext(string[] args)
+            {
+                var optionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>();
+                optionsBuilder.UseSqlite("Data Source=app.db"); // SQLite database
+
+                return new ApplicationDbContext(optionsBuilder.Options);
+            }
+        }
+
 
 
 

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
 
+
 namespace ClaimSystem.Controllers
 {
     public class ApproveController : Controller
@@ -59,6 +60,30 @@ namespace ClaimSystem.Controllers
             
         }
 
+        [HttpPost]
+        public async Task<IActionResult> Decline(int id)
+        {
+            var claim = await _context.Claims.FindAsync(id);
+            if (claim == null)
+            {
+                return NotFound();
+            }
+
+            //changes the verifed to rejected for claim status
+            claim.Status = Claim.status.Decline;
+            _context.Update(claim);
+            await _context.SaveChangesAsync();
+
+            // Reload only pending claims for verification
+            var claims = await _context.Claims
+                .Include(c => c.Lecturer)
+                .Where(c => c.Status == Claim.status.Verefied)
+                .ToListAsync();
+
+            
+            return View("Approve", claims);
+        }
+
         //this is for verify razor page
         public async Task<IActionResult> Verify()
         {
@@ -87,18 +112,35 @@ namespace ClaimSystem.Controllers
             await _context.SaveChangesAsync();
 
             // Redirect to Approve page
-            return RedirectToAction("Approve");
+            return RedirectToAction("Verify");
             
         }
 
-        public async Task<IActionResult> Reject()
+        [HttpPost]
+        public async Task<IActionResult> Reject(int id)
         {
-            //i am loading my enum datatype onto var datatype statuses
-            var claims = await _context.Claims.Include(c => c.Lecturer)
-        .Where(c => c.Status == Claim.status.Submitted) // only show claims that need verification
-        .ToListAsync();
+            //looking for specific claim
+            var claim = await _context.Claims.FindAsync(id);
+            if (claim == null)
+            {
+                return NotFound();
+            }
 
-            return View(claims);
+            //changes the verifed to rejected for claim status
+            claim.Status = Claim.status.Rejected;
+            _context.Update(claim);
+            await _context.SaveChangesAsync();
+
+            // Reload only pending claims for verification
+            var claims = await _context.Claims
+                .Include(c => c.Lecturer)
+                .Where(c => c.Status == Claim.status.Submitted)
+                .ToListAsync();
+
+            return View("Verify", claims);
+
+            //i am loading my enum datatype onto var datatype statuses
+            
         }
         
         public async Task<IActionResult> VerificationProcess()

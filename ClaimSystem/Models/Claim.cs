@@ -26,6 +26,7 @@ namespace ClaimSystem.Models
             Verefied,
             Approved,
             Rejected,
+            Decline,
             Settled
             }
 

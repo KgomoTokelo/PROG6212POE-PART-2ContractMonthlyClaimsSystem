@@ -3,161 +3,222 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
-
-
 namespace ClaimSystem.Controllers
 {
     public class ApproveController : Controller
     {
+        private readonly ApplicationDbContext _context;
 
-
-         private readonly ApplicationDbContext _context;
-
-    public ApproveController(ApplicationDbContext context)
-    {
-        _context = context;
-    }
-    //this is for Approve razor page
-    public async Task<IActionResult> Approve()
+        public ApproveController(ApplicationDbContext context)
         {
-            //i am loading my enum datatype onto var datatype statuses
-            var statuses = Enum.GetValues(typeof(Claim.status))
-                           .Cast<Claim.status>()
-                           .Select(s => new SelectListItem
-                           {
-                               Text = s.ToString(),
-                               Value = s.ToString()
-                           }).ToList();
+            _context = context;
+        }
 
-            ViewBag.StatusList = statuses;
+        // GET: Approve
+        public async Task<IActionResult> Approve()
+        {
+            try
+            {
+                var statuses = Enum.GetValues(typeof(Claim.status))
+                    .Cast<Claim.status>()
+                    .Select(s => new SelectListItem
+                    {
+                        Text = s.ToString(),
+                        Value = s.ToString()
+                    }).ToList();
 
-            var claims = await _context.Claims
-        .Include(c => c.Lecturer)
-        .Where(c => c.Status == Claim.status.Verefied)
-        .ToListAsync();
+                ViewBag.StatusList = statuses;
 
-            return View(claims);
-           
+                var claims = await _context.Claims
+                    .Include(c => c.Lecturer)
+                    .Where(c => c.Status == Claim.status.Verefied)
+                    .ToListAsync();
+
+                return View(claims);
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"❌ Error loading Approve page: {ex.Message}");
+                ViewBag.ErrorMessage = "An error occurred while loading the approval list.";
+                return View("Error");
+            }
         }
 
         [HttpPost]
         public async Task<IActionResult> Approve(int id)
         {
-            var claim = await _context.Claims.FindAsync(id);
-            //if no claim then returns notfound
-            if (claim == null)
+            try
             {
-                return NotFound();
+                var claim = await _context.Claims.FindAsync(id);
+                if (claim == null)
+                    return NotFound();
+
+                claim.Status = Claim.status.Approved;
+                _context.Update(claim);
+                await _context.SaveChangesAsync();
+
+                TempData["SuccessMessage"] = "Claim approved successfully!";
+                return RedirectToAction("Approve");
             }
-
-            // Update status to Verified
-            claim.Status = Claim.status.Approved;
-            _context.Update(claim);
-            await _context.SaveChangesAsync();
-
-            // Redirect to Approve page
-            return RedirectToAction("Approve");
-            
+            catch (DbUpdateException dbEx)
+            {
+                Console.Error.WriteLine($"❌ Database error approving claim: {dbEx.Message}");
+                ViewBag.ErrorMessage = "A database error occurred while approving the claim.";
+                return View("Error");
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"❌ Unexpected error approving claim: {ex.Message}");
+                ViewBag.ErrorMessage = "An unexpected error occurred while approving the claim.";
+                return View("Error");
+            }
         }
 
-        [HttpPost]
         [HttpPost]
         public async Task<IActionResult> Decline(int id, string comments)
         {
-            var claim = await _context.Claims.FindAsync(id);
-            if (claim == null)
-                return NotFound();
+            try
+            {
+                var claim = await _context.Claims.FindAsync(id);
+                if (claim == null)
+                    return NotFound();
 
-            claim.Status = Claim.status.Decline;
-            claim.Comments = comments; // save the comment
-            _context.Update(claim);
-            await _context.SaveChangesAsync();
+                claim.Status = Claim.status.Decline;
+                claim.Comments = comments;
 
-            // reload pending claims
-            var claims = await _context.Claims
-                .Include(c => c.Lecturer)
-                .Where(c => c.Status == Claim.status.Verefied)
-                .ToListAsync();
+                _context.Update(claim);
+                await _context.SaveChangesAsync();
 
-            return View("Approve", claims);
+                var claims = await _context.Claims
+                    .Include(c => c.Lecturer)
+                    .Where(c => c.Status == Claim.status.Verefied)
+                    .ToListAsync();
+
+                TempData["InfoMessage"] = "Claim declined successfully.";
+                return View("Approve", claims);
+            }
+            catch (DbUpdateException dbEx)
+            {
+                Console.Error.WriteLine($"❌ Database error declining claim: {dbEx.Message}");
+                ViewBag.ErrorMessage = "A database error occurred while declining the claim.";
+                return View("Error");
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"❌ Unexpected error declining claim: {ex.Message}");
+                ViewBag.ErrorMessage = "An unexpected error occurred while declining the claim.";
+                return View("Error");
+            }
         }
 
-
-        //this is for verify razor page
+        // GET: Verify
         public async Task<IActionResult> Verify()
         {
-            //i am loading my enum datatype onto var datatype statuses
-            var claims = await _context.Claims.Include(c => c.Lecturer)
-        .Where(c => c.Status == Claim.status.Submitted) // only show claims that need verification
-        .ToListAsync();
+            try
+            {
+                var claims = await _context.Claims
+                    .Include(c => c.Lecturer)
+                    .Where(c => c.Status == Claim.status.Submitted)
+                    .ToListAsync();
 
-            return View(claims);
+                return View(claims);
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"❌ Error loading Verify page: {ex.Message}");
+                ViewBag.ErrorMessage = "An error occurred while loading claims for verification.";
+                return View("Error");
+            }
         }
 
         [HttpPost]
         public async Task<IActionResult> Verify(int id)
         {
-            //checks for claim in database
-            var claim = await _context.Claims.FindAsync(id);
-            //if no claim then returns notfound
-            if (claim == null)
+            try
             {
-                return NotFound();
+                var claim = await _context.Claims.FindAsync(id);
+                if (claim == null)
+                    return NotFound();
+
+                claim.Status = Claim.status.Verefied;
+                _context.Update(claim);
+                await _context.SaveChangesAsync();
+
+                TempData["SuccessMessage"] = "Claim verified successfully!";
+                return RedirectToAction("Verify");
             }
-
-            // Update status to Verified
-            claim.Status = Claim.status.Verefied;
-            _context.Update(claim);
-            await _context.SaveChangesAsync();
-
-            // Redirect to Approve page
-            return RedirectToAction("Verify");
-            
+            catch (DbUpdateException dbEx)
+            {
+                Console.Error.WriteLine($"❌ Database error verifying claim: {dbEx.Message}");
+                ViewBag.ErrorMessage = "A database error occurred while verifying the claim.";
+                return View("Error");
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"❌ Unexpected error verifying claim: {ex.Message}");
+                ViewBag.ErrorMessage = "An unexpected error occurred while verifying the claim.";
+                return View("Error");
+            }
         }
 
         [HttpPost]
         public async Task<IActionResult> Reject(int id, string comments)
         {
-            var claim = await _context.Claims.FindAsync(id);
-            if (claim == null)
+            try
             {
-                return NotFound();
+                var claim = await _context.Claims.FindAsync(id);
+                if (claim == null)
+                    return NotFound();
+
+                claim.Status = Claim.status.Rejected;
+                _context.Update(claim);
+
+                var approvalRecord = new Approve
+                {
+                    ClaimID = id,
+                    UserID = 1, // TODO: Replace with logged-in user ID when authentication is implemented
+                    ApprovalDate = DateTime.Now,
+                    Decision = "Rejected",
+                    Comments = comments
+                };
+
+                _context.Approves.Add(approvalRecord);
+                await _context.SaveChangesAsync();
+
+                var claims = await _context.Claims
+                    .Include(c => c.Lecturer)
+                    .Where(c => c.Status == Claim.status.Submitted)
+                    .ToListAsync();
+
+                TempData["InfoMessage"] = "Claim rejected successfully.";
+                return View("Verify", claims);
             }
-
-            // Update claim status
-            claim.Status = Claim.status.Rejected;
-            _context.Update(claim);
-
-            // Record rejection in Approve table
-            var approvalRecord = new Approve
+            catch (DbUpdateException dbEx)
             {
-                ClaimID = id,
-                UserID = 1, // ← Replace this with logged-in user’s ID if you have authentication
-                ApprovalDate = DateTime.Now,
-                Decision = "Rejected",
-                Comments = comments
-            };
-
-            _context.Approves.Add(approvalRecord);
-            await _context.SaveChangesAsync();
-
-            // Reload only pending claims
-            var claims = await _context.Claims
-                .Include(c => c.Lecturer)
-                .Where(c => c.Status == Claim.status.Submitted)
-                .ToListAsync();
-
-            return View("Verify", claims);
+                Console.Error.WriteLine($"❌ Database error rejecting claim: {dbEx.Message}");
+                ViewBag.ErrorMessage = "A database error occurred while rejecting the claim.";
+                return View("Error");
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"❌ Unexpected error rejecting claim: {ex.Message}");
+                ViewBag.ErrorMessage = "An unexpected error occurred while rejecting the claim.";
+                return View("Error");
+            }
         }
 
-
-        public async Task<IActionResult> VerificationProcess()
+        public IActionResult VerificationProcess()
         {
-
-            return View();
+            try
+            {
+                return View();
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"❌ Error loading VerificationProcess: {ex.Message}");
+                ViewBag.ErrorMessage = "An error occurred while loading the verification process.";
+                return View("Error");
+            }
         }
-
     }
-    }
-
-
+}

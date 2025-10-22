@@ -2,8 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using ClaimSystem.Models;
-
 
 namespace ClaimSystem.Controllers
 {
@@ -16,87 +14,141 @@ namespace ClaimSystem.Controllers
             _context = context;
         }
 
-        //this is for Claim razor page
+        // GET: Claim
         public async Task<IActionResult> Claim()
         {
-            var claims = await _context.Claims.Include(c => c.Lecturer).ToListAsync();
-
-            return View(claims);
-          
+            try
+            {
+                var claims = await _context.Claims.Include(c => c.Lecturer).ToListAsync();
+                return View(claims);
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"❌ Error loading claims: {ex.Message}");
+                ViewBag.ErrorMessage = "An error occurred while loading claims. Please try again later.";
+                return View("Error");
+            }
         }
+
+        // GET: Claim/CreateClaim
         [HttpGet]
         public IActionResult CreateClaim()
         {
+            try
+            {
+                var statuses = Enum.GetValues(typeof(Claim.status))
+                    .Cast<Claim.status>()
+                    .Select(s => new SelectListItem
+                    {
+                        Text = s.ToString(),
+                        Value = s.ToString()
+                    }).ToList();
 
-            var statuses = Enum.GetValues(typeof(Claim.status))
-                           .Cast<Claim.status>()
-                           .Select(s => new SelectListItem
-                           {
-                               Text = s.ToString(),
-                               Value = s.ToString()
-                           }).ToList();
+                ViewBag.StatusList = statuses;
 
-            ViewBag.StatusList = statuses;
-            var lecturers = _context.Lecturers
-                        .Select(l => new SelectListItem
-                        {
-                            Value = l.LecturerID.ToString(),
-                            Text = l.Name
-                        }).ToList();
-            ViewBag.LecturerList = lecturers;
+                var lecturers = _context.Lecturers
+                    .Select(l => new SelectListItem
+                    {
+                        Value = l.LecturerID.ToString(),
+                        Text = l.Name
+                    }).ToList();
 
-            return View(new Claim());
+                ViewBag.LecturerList = lecturers;
+
+                return View(new Claim());
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"❌ Error preparing CreateClaim view: {ex.Message}");
+                ViewBag.ErrorMessage = "An error occurred while preparing the claim creation form.";
+                return View("Error");
+            }
         }
 
-        //creating the method to send user input from razor view Createclaim
-        [HttpPost]//a post method sends to server in basic terms
+        // POST: Claim/CreateClaim
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateClaim(Claim model)
         {
-            if (ModelState.IsValid)
+            try
             {
-                //saves to database
-                _context.Claims.Add(model);
-               await _context.SaveChangesAsync();
-                Console.WriteLine("✅ Claim saved successfully.");
-                return RedirectToAction("Claim");
-            }
-
-            foreach (var state in ModelState)
-            {
-                foreach (var error in state.Value.Errors)
+                if (ModelState.IsValid)
                 {
-                    Console.WriteLine($"Field: {state.Key}, Error: {error.ErrorMessage}");
+                    _context.Claims.Add(model);
+                    await _context.SaveChangesAsync();
+                    Console.WriteLine("✅ Claim saved successfully.");
+                    TempData["SuccessMessage"] = "Claim submitted successfully!";
+                    return RedirectToAction("Claim");
                 }
+
+                // Log validation errors
+                foreach (var state in ModelState)
+                {
+                    foreach (var error in state.Value.Errors)
+                    {
+                        Console.WriteLine($"Field: {state.Key}, Error: {error.ErrorMessage}");
+                    }
+                }
+
+                // Repopulate dropdowns before returning view
+                ViewBag.StatusList = Enum.GetValues(typeof(Claim.status))
+                    .Cast<Claim.status>()
+                    .Select(s => new SelectListItem
+                    {
+                        Text = s.ToString(),
+                        Value = s.ToString()
+                    }).ToList();
+
+                ViewBag.LecturerList = _context.Lecturers
+                    .Select(l => new SelectListItem
+                    {
+                        Value = l.LecturerID.ToString(),
+                        Text = l.Name
+                    }).ToList();
+
+                Console.WriteLine("⚠️ Claim validation failed.");
+                return View(model);
             }
-
-            ViewBag.StatusList = Enum.GetValues(typeof(Claim.status))
-                              .Cast<Claim.status>()
-                              .Select(s => new SelectListItem
-                              {
-                                  Text = s.ToString(),
-                                  Value = s.ToString()
-                              }).ToList();
-            Console.WriteLine("✅ Claim saved unsuccessfully.");
-
-            return View(model);
+            catch (DbUpdateException dbEx)
+            {
+                Console.Error.WriteLine($"❌ Database error while saving claim: {dbEx.Message}");
+                ViewBag.ErrorMessage = "A database error occurred while saving your claim. Please try again.";
+                return View("Error");
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"❌ Unexpected error while saving claim: {ex.Message}");
+                ViewBag.ErrorMessage = "An unexpected error occurred while submitting your claim.";
+                return View("Error");
+            }
         }
 
+        // GET: Claim/Views/{id}
         public async Task<IActionResult> Views(int id)
         {
-            if (id == null) { 
-                return NotFound(); }
+            try
+            {
+                if (id == 0)
+                {
+                    return NotFound();
+                }
 
-                
+                var claim = await _context.Claims
+                    .Include(c => c.Lecturer)
+                    .Include(c => c.Documents)
+                    .FirstOrDefaultAsync(c => c.ClaimID == id);
 
-            var claim = await _context.Claims
-                .Include(c => c.Lecturer)
-                .Include(c => c.Documents)  // ✅ Include uploaded docs
-                .FirstOrDefaultAsync(c => c.ClaimID == id);
+                if (claim == null)
+                    return NotFound();
 
-            if (claim == null)
-                return NotFound();
-
-            return View(claim);
+                return View(claim);
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"❌ Error loading claim details: {ex.Message}");
+                ViewBag.ErrorMessage = "An error occurred while loading the claim details.";
+                return View("Error");
+            }
         }
     }
 }

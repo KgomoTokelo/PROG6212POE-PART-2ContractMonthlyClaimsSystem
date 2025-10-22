@@ -14,7 +14,7 @@ namespace ClaimSystem.Controllers
             _context = context;
         }
 
-        // GET: Approve
+        // a method that fetches for approve from verfiy page
         public async Task<IActionResult> Approve()
         {
             try
@@ -38,12 +38,13 @@ namespace ClaimSystem.Controllers
             }
             catch (Exception ex)
             {
-                Console.Error.WriteLine($"❌ Error loading Approve page: {ex.Message}");
+                Console.Error.WriteLine($" Error loading Approve page: {ex.Message}");
                 ViewBag.ErrorMessage = "An error occurred while loading the approval list.";
                 return View("Error");
             }
         }
 
+        //a method for updating database for approved lecturese
         [HttpPost]
         public async Task<IActionResult> Approve(int id)
         {
@@ -62,18 +63,19 @@ namespace ClaimSystem.Controllers
             }
             catch (DbUpdateException dbEx)
             {
-                Console.Error.WriteLine($"❌ Database error approving claim: {dbEx.Message}");
+                Console.Error.WriteLine($"Database error approving claim: {dbEx.Message}");
                 ViewBag.ErrorMessage = "A database error occurred while approving the claim.";
                 return View("Error");
             }
             catch (Exception ex)
             {
-                Console.Error.WriteLine($"❌ Unexpected error approving claim: {ex.Message}");
+                Console.Error.WriteLine($"Unexpected error approving claim: {ex.Message}");
                 ViewBag.ErrorMessage = "An unexpected error occurred while approving the claim.";
                 return View("Error");
             }
         }
 
+        //a method for updating database for declined lectures
         [HttpPost]
         public async Task<IActionResult> Decline(int id, string comments)
         {
@@ -99,19 +101,19 @@ namespace ClaimSystem.Controllers
             }
             catch (DbUpdateException dbEx)
             {
-                Console.Error.WriteLine($"❌ Database error declining claim: {dbEx.Message}");
+                Console.Error.WriteLine($" Database error declining claim: {dbEx.Message}");
                 ViewBag.ErrorMessage = "A database error occurred while declining the claim.";
                 return View("Error");
             }
             catch (Exception ex)
             {
-                Console.Error.WriteLine($"❌ Unexpected error declining claim: {ex.Message}");
+                Console.Error.WriteLine($" Unexpected error declining claim: {ex.Message}");
                 ViewBag.ErrorMessage = "An unexpected error occurred while declining the claim.";
                 return View("Error");
             }
         }
 
-        // GET: Verify
+        // a method that fecthes info from databse to see lectures that need to be approved
         public async Task<IActionResult> Verify()
         {
             try
@@ -125,12 +127,13 @@ namespace ClaimSystem.Controllers
             }
             catch (Exception ex)
             {
-                Console.Error.WriteLine($"❌ Error loading Verify page: {ex.Message}");
+                Console.Error.WriteLine($"Error loading Verify page: {ex.Message}");
                 ViewBag.ErrorMessage = "An error occurred while loading claims for verification.";
                 return View("Error");
             }
         }
 
+        //a method that updates database for lecture status verified
         [HttpPost]
         public async Task<IActionResult> Verify(int id)
         {
@@ -149,18 +152,20 @@ namespace ClaimSystem.Controllers
             }
             catch (DbUpdateException dbEx)
             {
-                Console.Error.WriteLine($"❌ Database error verifying claim: {dbEx.Message}");
+                Console.Error.WriteLine($"Database error verifying claim: {dbEx.Message}");
                 ViewBag.ErrorMessage = "A database error occurred while verifying the claim.";
                 return View("Error");
             }
             catch (Exception ex)
             {
-                Console.Error.WriteLine($"❌ Unexpected error verifying claim: {ex.Message}");
+                Console.Error.WriteLine($"unexpected error verifying claim: {ex.Message}");
                 ViewBag.ErrorMessage = "An unexpected error occurred while verifying the claim.";
                 return View("Error");
             }
         }
 
+
+        //a method that updates lectures that are rejected to database
         [HttpPost]
         public async Task<IActionResult> Reject(int id, string comments)
         {
@@ -195,13 +200,13 @@ namespace ClaimSystem.Controllers
             }
             catch (DbUpdateException dbEx)
             {
-                Console.Error.WriteLine($"❌ Database error rejecting claim: {dbEx.Message}");
+                Console.Error.WriteLine($"Database error rejecting claim: {dbEx.Message}");
                 ViewBag.ErrorMessage = "A database error occurred while rejecting the claim.";
                 return View("Error");
             }
             catch (Exception ex)
             {
-                Console.Error.WriteLine($"❌ Unexpected error rejecting claim: {ex.Message}");
+                Console.Error.WriteLine($"Unexpected error rejecting claim: {ex.Message}");
                 ViewBag.ErrorMessage = "An unexpected error occurred while rejecting the claim.";
                 return View("Error");
             }
@@ -209,16 +214,10 @@ namespace ClaimSystem.Controllers
 
         public IActionResult VerificationProcess()
         {
-            try
-            {
-                return View();
-            }
-            catch (Exception ex)
-            {
-                Console.Error.WriteLine($"❌ Error loading VerificationProcess: {ex.Message}");
-                ViewBag.ErrorMessage = "An error occurred while loading the verification process.";
+           
                 return View("Error");
             }
         }
     }
-}
+
+

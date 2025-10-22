@@ -14,7 +14,7 @@ namespace ClaimSystem.Controllers
             _context = context;
         }
 
-        // GET: Claim
+        // for claim page to view all clams
         public async Task<IActionResult> Claim()
         {
             try
@@ -24,13 +24,13 @@ namespace ClaimSystem.Controllers
             }
             catch (Exception ex)
             {
-                Console.Error.WriteLine($"❌ Error loading claims: {ex.Message}");
+                Console.WriteLine($" Error loading claims: {ex.Message}");
                 ViewBag.ErrorMessage = "An error occurred while loading claims. Please try again later.";
                 return View("Error");
             }
         }
 
-        // GET: Claim/CreateClaim
+        // a method that fetches data from database for lectures and status
         [HttpGet]
         public IActionResult CreateClaim()
         {
@@ -59,13 +59,13 @@ namespace ClaimSystem.Controllers
             }
             catch (Exception ex)
             {
-                Console.Error.WriteLine($"❌ Error preparing CreateClaim view: {ex.Message}");
+                Console.WriteLine($" Error preparing CreateClaim view: {ex.Message}");
                 ViewBag.ErrorMessage = "An error occurred while preparing the claim creation form.";
                 return View("Error");
             }
         }
 
-        // POST: Claim/CreateClaim
+        //  a post method for creating views esstentially adds or updates database
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateClaim(Claim model)
@@ -76,12 +76,12 @@ namespace ClaimSystem.Controllers
                 {
                     _context.Claims.Add(model);
                     await _context.SaveChangesAsync();
-                    Console.WriteLine("✅ Claim saved successfully.");
+                    Console.WriteLine("Claim saved successfully.");
                     TempData["SuccessMessage"] = "Claim submitted successfully!";
                     return RedirectToAction("Claim");
                 }
 
-                // Log validation errors
+                // for logging errors
                 foreach (var state in ModelState)
                 {
                     foreach (var error in state.Value.Errors)
@@ -90,7 +90,7 @@ namespace ClaimSystem.Controllers
                     }
                 }
 
-                // Repopulate dropdowns before returning view
+                // populates dropdowns for view
                 ViewBag.StatusList = Enum.GetValues(typeof(Claim.status))
                     .Cast<Claim.status>()
                     .Select(s => new SelectListItem
@@ -106,24 +106,24 @@ namespace ClaimSystem.Controllers
                         Text = l.Name
                     }).ToList();
 
-                Console.WriteLine("⚠️ Claim validation failed.");
+                Console.WriteLine(" Claim validation failed.");
                 return View(model);
             }
             catch (DbUpdateException dbEx)
             {
-                Console.Error.WriteLine($"❌ Database error while saving claim: {dbEx.Message}");
+                Console.WriteLine($" Database error while saving claim: {dbEx.Message}");
                 ViewBag.ErrorMessage = "A database error occurred while saving your claim. Please try again.";
                 return View("Error");
             }
             catch (Exception ex)
             {
-                Console.Error.WriteLine($"❌ Unexpected error while saving claim: {ex.Message}");
+                Console.WriteLine($" Unexpected error while saving claim: {ex.Message}");
                 ViewBag.ErrorMessage = "An unexpected error occurred while submitting your claim.";
                 return View("Error");
             }
         }
 
-        // GET: Claim/Views/{id}
+        // a method to view indivual claims
         public async Task<IActionResult> Views(int id)
         {
             try
@@ -145,7 +145,7 @@ namespace ClaimSystem.Controllers
             }
             catch (Exception ex)
             {
-                Console.Error.WriteLine($"❌ Error loading claim details: {ex.Message}");
+                Console.WriteLine($" Error loading claim details: {ex.Message}");
                 ViewBag.ErrorMessage = "An error occurred while loading the claim details.";
                 return View("Error");
             }

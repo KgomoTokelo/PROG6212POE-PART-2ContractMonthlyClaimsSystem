@@ -14,12 +14,13 @@ namespace ClaimSystem.Controllers
             _environment = environment;
         }
 
-        // GET: UploadDocuments/Upload
+        // a method that runs upload view
         public IActionResult Upload()
         {
             return View();
         }
 
+        //a method that updates database on uploaded files to it
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Upload(UploadDocuments model, IFormFile fileUpload)
@@ -32,32 +33,33 @@ namespace ClaimSystem.Controllers
                     return View(model);
                 }
 
-                // Allow only specific file extensions
+                // Allows only specific file extension
                 var allowedExtensions = new[] { ".pdf", ".docx", ".jpg", ".png" };
                 var extension = Path.GetExtension(fileUpload.FileName).ToLower();
 
+                //exception
                 if (Array.IndexOf(allowedExtensions, extension) < 0)
                 {
                     ModelState.AddModelError("fileUpload", "Unsupported file format.");
                     return View(model);
                 }
 
-                // Create upload folder if not exists
+                // Create upload folder if it does not exists
                 var uploadFolder = Path.Combine(_environment.WebRootPath, "uploads");
                 if (!Directory.Exists(uploadFolder))
                     Directory.CreateDirectory(uploadFolder);
 
-                // Create unique file name
+                // Create a unique file name so files dont use same name
                 var uniqueFileName = $"{Guid.NewGuid()}{extension}";
                 var filePath = Path.Combine(uploadFolder, uniqueFileName);
 
-                // Save file to wwwroot/uploads
+                // uploads file
                 using (var stream = new FileStream(filePath, FileMode.Create))
                 {
                     await fileUpload.CopyToAsync(stream);
                 }
 
-                // Save file info to DB
+                // Save file info to Database
                 model.FileName = fileUpload.FileName;
                 model.FilePath = "/uploads/" + uniqueFileName;
                 model.UploadDate = DateTime.Now;
@@ -72,7 +74,7 @@ namespace ClaimSystem.Controllers
             }
             catch (IOException ioEx)
             {
-                // Handle file-related errors
+                // Handle file  errors
                 Console.Error.WriteLine($"File error: {ioEx.Message}");
                 ModelState.AddModelError("", "An error occurred while saving the file. Please try again.");
                 return View(model);
@@ -86,7 +88,7 @@ namespace ClaimSystem.Controllers
             }
         }
 
-        // GET: UploadDocuments/UploadSuccess
+        // a 
         public IActionResult UploadSuccess()
         {
             try
@@ -105,7 +107,7 @@ namespace ClaimSystem.Controllers
             catch (Exception ex)
             {
                 // Log or handle unexpected rendering issues
-                Console.Error.WriteLine($"Error displaying success page: {ex.Message}");
+                Console.WriteLine($"Error displaying success page: {ex.Message}");
                 ViewBag.ErrorMessage = "An error occurred while loading the success page.";
                 return View("Error"); // Make sure you have an Error.cshtml view
             }

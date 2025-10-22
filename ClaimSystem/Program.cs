@@ -13,16 +13,16 @@ namespace ClaimSystem
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-            // Add MVC controllers and Razor Pages services
+            
             builder.Services.AddControllersWithViews();
             builder.Services.AddRazorPages();
 
-            // Add developer exception page for database errors
+            
             builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
             var app = builder.Build();
 
-            // Configure the HTTP request pipeline
+            
             if (app.Environment.IsDevelopment())
             {
                 app.UseMigrationsEndPoint();

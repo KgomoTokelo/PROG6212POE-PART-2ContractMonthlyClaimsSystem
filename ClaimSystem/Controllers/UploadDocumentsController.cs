@@ -70,7 +70,7 @@ namespace ClaimSystem.Controllers
                 TempData["SuccessMessage"] = "File uploaded successfully!";
                 Console.WriteLine("Successful upload");
 
-                return RedirectToAction("UploadSuccess");
+                return RedirectToAction("Claim", "Claim");
             }
             catch (IOException ioEx)
             {
@@ -102,7 +102,7 @@ namespace ClaimSystem.Controllers
                     ViewBag.Message = TempData["SuccessMessage"];
                 }
 
-                return View();
+                return View("Claim","Claim");
             }
             catch (Exception ex)
             {

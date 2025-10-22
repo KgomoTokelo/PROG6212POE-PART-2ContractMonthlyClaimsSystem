@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics;
 
 namespace ClaimSystem.Controllers
 {
@@ -171,25 +172,32 @@ namespace ClaimSystem.Controllers
         {
             try
             {
+                // Find claim
                 var claim = await _context.Claims.FindAsync(id);
                 if (claim == null)
-                    return NotFound();
+                {
+                    TempData["ErrorMessage"] = $"No claim found with ID {id}.";
+                    return RedirectToAction("Verify", "Claim");
+                }
 
+                // Update claim status
                 claim.Status = Claim.status.Rejected;
                 _context.Update(claim);
 
+                // Create approval record
                 var approvalRecord = new Approve
                 {
                     ClaimID = id,
-                    UserID = 1, // TODO: Replace with logged-in user ID when authentication is implemented
+                    UserID = 1, // TODO: Replace with logged-in user ID
                     ApprovalDate = DateTime.Now,
                     Decision = "Rejected",
-                    Comments = comments
+                    Comments = string.IsNullOrWhiteSpace(comments) ? "No comment provided" : comments
                 };
 
                 _context.Approves.Add(approvalRecord);
                 await _context.SaveChangesAsync();
 
+                // Reload claims still needing verification
                 var claims = await _context.Claims
                     .Include(c => c.Lecturer)
                     .Where(c => c.Status == Claim.status.Submitted)
@@ -200,17 +208,26 @@ namespace ClaimSystem.Controllers
             }
             catch (DbUpdateException dbEx)
             {
-                Console.Error.WriteLine($"Database error rejecting claim: {dbEx.Message}");
+                Console.Error.WriteLine($"❌ Database error rejecting claim: {dbEx.Message}");
+                var errorModel = new ErrorViewModel
+                {
+                    RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier
+                };
                 ViewBag.ErrorMessage = "A database error occurred while rejecting the claim.";
-                return View("Error");
+                return View("Error", errorModel);
             }
             catch (Exception ex)
             {
-                Console.Error.WriteLine($"Unexpected error rejecting claim: {ex.Message}");
+                Console.Error.WriteLine($"❌ Unexpected error rejecting claim: {ex.Message}");
+                var errorModel = new ErrorViewModel
+                {
+                    RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier
+                };
                 ViewBag.ErrorMessage = "An unexpected error occurred while rejecting the claim.";
-                return View("Error");
+                return View("Error", errorModel);
             }
         }
+
 
         public IActionResult VerificationProcess()
         {

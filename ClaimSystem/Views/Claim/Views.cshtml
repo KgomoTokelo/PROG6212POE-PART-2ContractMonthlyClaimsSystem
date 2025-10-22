@@ -71,7 +71,7 @@
                         <tr>
                             <th>File Name</th>
                             <th>Uploaded On</th>
-                            <th>Action</th>
+                            
                         </tr>
                     </thead>
                     <tbody>
@@ -80,14 +80,7 @@
                             <tr>
                                 <td>@doc.FileName</td>
                                 <td>@doc.UploadDate.ToString("yyyy-MM-dd HH:mm")</td>
-                                <td>
-                                    <a asp-controller="UploadDocuments"
-                                       asp-action="Download"
-                                       asp-route-id="@doc.DocumentID"
-                                       class="btn btn-sm btn-outline-primary">
-                                        <i class="bi bi-download"></i> Download
-                                    </a>
-                                </td>
+                                
                             </tr>
                         }
                     </tbody>
@@ -114,12 +107,7 @@
                 </a>
 
                 <div>
-                    <a asp-action="Edit" asp-route-id="@Model.ClaimID" class="btn btn-warning me-2">
-                        <i class="bi bi-pencil-square"></i> Edit
-                    </a>
-                    <a asp-action="Delete" asp-route-id="@Model.ClaimID" class="btn btn-danger">
-                        <i class="bi bi-trash"></i> Delete
-                    </a>
+                  
                 </div>
             </div>
         </div>

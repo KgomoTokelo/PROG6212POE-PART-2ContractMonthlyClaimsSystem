@@ -61,28 +61,27 @@ namespace ClaimSystem.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Decline(int id)
+        [HttpPost]
+        public async Task<IActionResult> Decline(int id, string comments)
         {
             var claim = await _context.Claims.FindAsync(id);
             if (claim == null)
-            {
                 return NotFound();
-            }
 
-            //changes the verifed to rejected for claim status
             claim.Status = Claim.status.Decline;
+            claim.Comments = comments; // save the comment
             _context.Update(claim);
             await _context.SaveChangesAsync();
 
-            // Reload only pending claims for verification
+            // reload pending claims
             var claims = await _context.Claims
                 .Include(c => c.Lecturer)
                 .Where(c => c.Status == Claim.status.Verefied)
                 .ToListAsync();
 
-            
             return View("Approve", claims);
         }
+
 
         //this is for verify razor page
         public async Task<IActionResult> Verify()
@@ -117,32 +116,41 @@ namespace ClaimSystem.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Reject(int id)
+        public async Task<IActionResult> Reject(int id, string comments)
         {
-            //looking for specific claim
             var claim = await _context.Claims.FindAsync(id);
             if (claim == null)
             {
                 return NotFound();
             }
 
-            //changes the verifed to rejected for claim status
+            // Update claim status
             claim.Status = Claim.status.Rejected;
             _context.Update(claim);
+
+            // Record rejection in Approve table
+            var approvalRecord = new Approve
+            {
+                ClaimID = id,
+                UserID = 1, // ← Replace this with logged-in user’s ID if you have authentication
+                ApprovalDate = DateTime.Now,
+                Decision = "Rejected",
+                Comments = comments
+            };
+
+            _context.Approves.Add(approvalRecord);
             await _context.SaveChangesAsync();
 
-            // Reload only pending claims for verification
+            // Reload only pending claims
             var claims = await _context.Claims
                 .Include(c => c.Lecturer)
                 .Where(c => c.Status == Claim.status.Submitted)
                 .ToListAsync();
 
             return View("Verify", claims);
-
-            //i am loading my enum datatype onto var datatype statuses
-            
         }
-        
+
+
         public async Task<IActionResult> VerificationProcess()
         {
 

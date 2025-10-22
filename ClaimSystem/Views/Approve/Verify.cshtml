@@ -1,4 +1,5 @@
 ﻿@model IEnumerable<ClaimSystem.Models.Claim>
+
 @{
     ViewData["Title"] = "Verify Claims";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -29,7 +30,7 @@
         {
             var total = claim.HoursWorked * claim.HourlyRate;
 
-            <div style="border: 1px solid #ccc; border-radius: 10px; padding: 15px; width: 250px; box-shadow: 2px 2px 10px rgba(0,0,0,0.1); text-align: center;">
+            <div style="border: 1px solid #ccc; border-radius: 10px; padding: 15px; width: 260px; box-shadow: 2px 2px 10px rgba(0,0,0,0.1); text-align: center;">
                 <img src="https://via.placeholder.com/80" alt="Lecturer Photo" style="border-radius:50%; margin-bottom:10px;">
                 <h4>@claim.Lecturer.Name</h4>
                 <p><strong>Claim ID:</strong> @claim.ClaimID</p>
@@ -40,14 +41,41 @@
                 <p><strong>Hours:</strong> @claim.HoursWorked</p>
                 <p><strong>Status:</strong> <span class="badge bg-info">@claim.Status</span></p>
 
+                <!-- Verify button -->
                 <form asp-action="Verify" asp-route-id="@claim.ClaimID" method="post" style="display:inline;">
-                    <button type="submit" style="padding: 8px 15px; border-radius:5px; background-color:#28a745; color:white; border:none; cursor:pointer;">Verify</button>
+                    <button type="submit"
+                            style="padding: 8px 15px; border-radius:5px; background-color:#28a745; color:white; border:none; cursor:pointer;">
+                        Verify
+                    </button>
                 </form>
 
-                <form asp-action="Reject" asp-route-id="@claim.ClaimID" method="post" style="display:inline; margin-left:5px;">
-                    <button type="submit" style="padding: 8px 15px; border-radius:5px; background-color:#dc3545; color:white; border:none; cursor:pointer;">Reject</button>
+                <!-- Reject button (shows comment box when clicked) -->
+                <button type="button"
+                        class="reject-btn"
+                        data-claimid="@claim.ClaimID"
+                        style="margin-left:5px; padding:8px 15px; border-radius:5px; background-color:#dc3545; color:white; border:none; cursor:pointer;">
+                    Reject
+                </button>
+
+                <!-- Hidden comment form -->
+                <form asp-action="Reject" asp-route-id="@claim.ClaimID" method="post" class="comment-form" style="display:none; margin-top:10px;">
+                    <textarea asp-for="@claim.Comments" placeholder="Enter reason for rejection..." required
+                              style="width: 100%; border-radius:5px; border:1px solid #ccc; padding:5px; resize:none;"></textarea>
+                    <button type="submit"
+                            style="margin-top:5px; padding:8px 15px; border-radius:5px; background-color:#dc3545; color:white; border:none; cursor:pointer;">
+                        Confirm Reject
+                    </button>
                 </form>
             </div>
         }
     }
 </div>
+
+<script>
+    document.querySelectorAll('.reject-btn').forEach(button => {
+        button.addEventListener('click', () => {
+            const form = button.nextElementSibling;
+            form.style.display = form.style.display === 'none' ? 'block' : 'none';
+        });
+    });
+</script>

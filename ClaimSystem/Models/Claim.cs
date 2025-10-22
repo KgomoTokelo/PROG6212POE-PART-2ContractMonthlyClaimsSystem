@@ -18,7 +18,7 @@ namespace ClaimSystem.Models
         // Navigation
         public Lecturer? Lecturer { get; set; }
         public ICollection<UploadDocuments>? Documents { get; set; }
-        public ICollection<Approve>? Approvals { get; set; }
+        public Approve? Approvals { get; set; }
 
         //created my own datatype because i have fixed values for status
         public enum status{

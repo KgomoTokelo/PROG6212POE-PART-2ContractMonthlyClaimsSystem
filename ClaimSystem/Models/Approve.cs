@@ -14,7 +14,7 @@ namespace ClaimSystem.Models
 
         // Navigation
         public Claim Claim { get; set; }
-        public User User { get; set; }
+        public User? User { get; set; }
 
         
     }

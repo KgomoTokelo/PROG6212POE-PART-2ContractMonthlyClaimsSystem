@@ -9102,9 +9102,9 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\lab_services_student\\Source\\Repos\\PROG6212POE-PART-1ContractMonthlyClaimsSystem\\ClaimSystemTest\\ClaimSystemTest.csproj",
+      "projectUniqueName": "C:\\Users\\lab_services_student\\source\\repos\\PROG6212POE-PART-1ContractMonthlyClaimsSystem\\ClaimSystemTest\\ClaimSystemTest.csproj",
       "projectName": "ClaimSystemTest",
-      "projectPath": "C:\\Users\\lab_services_student\\Source\\Repos\\PROG6212POE-PART-1ContractMonthlyClaimsSystem\\ClaimSystemTest\\ClaimSystemTest.csproj",
+      "projectPath": "C:\\Users\\lab_services_student\\source\\repos\\PROG6212POE-PART-1ContractMonthlyClaimsSystem\\ClaimSystemTest\\ClaimSystemTest.csproj",
       "packagesPath": "C:\\Users\\lab_services_student\\.nuget\\packages\\",
       "outputPath": "C:\\Users\\lab_services_student\\Source\\Repos\\PROG6212POE-PART-1ContractMonthlyClaimsSystem\\ClaimSystemTest\\obj\\",
       "projectStyle": "PackageReference",
@@ -9127,8 +9127,8 @@
         "net9.0": {
           "targetAlias": "net9.0",
           "projectReferences": {
-            "C:\\Users\\lab_services_student\\Source\\Repos\\PROG6212POE-PART-1ContractMonthlyClaimsSystem\\ClaimSystem\\ClaimSystem.csproj": {
-              "projectPath": "C:\\Users\\lab_services_student\\Source\\Repos\\PROG6212POE-PART-1ContractMonthlyClaimsSystem\\ClaimSystem\\ClaimSystem.csproj"
+            "C:\\Users\\lab_services_student\\source\\repos\\PROG6212POE-PART-1ContractMonthlyClaimsSystem\\ClaimSystem\\ClaimSystem.csproj": {
+              "projectPath": "C:\\Users\\lab_services_student\\source\\repos\\PROG6212POE-PART-1ContractMonthlyClaimsSystem\\ClaimSystem\\ClaimSystem.csproj"
             }
           }
         }

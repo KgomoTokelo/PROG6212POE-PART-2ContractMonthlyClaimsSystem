@@ -28,7 +28,7 @@ namespace ClaimSystem.Controllers
             }
             catch (Exception ex)
             {
-                Console.Error.WriteLine($"❌ Error loading dashboard: {ex.Message}");
+                Console.Error.WriteLine($"Error loading dashboard: {ex.Message}");
                 ViewBag.ErrorMessage = "An error occurred while loading the dashboard.";
                 return View("Error");
             }

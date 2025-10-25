@@ -208,7 +208,7 @@ namespace ClaimSystem.Controllers
             }
             catch (DbUpdateException dbEx)
             {
-                Console.Error.WriteLine($"❌ Database error rejecting claim: {dbEx.Message}");
+                Console.Error.WriteLine($"Database error rejecting claim: {dbEx.Message}");
                 var errorModel = new ErrorViewModel
                 {
                     RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier
@@ -218,7 +218,7 @@ namespace ClaimSystem.Controllers
             }
             catch (Exception ex)
             {
-                Console.Error.WriteLine($"❌ Unexpected error rejecting claim: {ex.Message}");
+                Console.Error.WriteLine($"Unexpected error rejecting claim: {ex.Message}");
                 var errorModel = new ErrorViewModel
                 {
                     RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier

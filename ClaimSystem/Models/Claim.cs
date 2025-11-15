@@ -4,6 +4,15 @@ namespace ClaimSystem.Models
 {
     public class Claim
     {
+        private string name;
+        private object username;
+
+        public Claim(string name, object username)
+        {
+            this.name = name;
+            this.username = username;
+        }
+
         [Key]
         public int ClaimID { get; set; }       // PK
         public int LecturerID { get; set; }    // FK to Lecturer

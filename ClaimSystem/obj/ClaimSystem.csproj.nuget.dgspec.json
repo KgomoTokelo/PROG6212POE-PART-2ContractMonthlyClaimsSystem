@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\lab_services_student\\Source\\Repos\\PROG6212POE-PART-1ContractMonthlyClaimsSystem\\ClaimSystem\\ClaimSystem.csproj": {}
+    "C:\\Users\\lab_services_student\\Desktop\\PROG6212POE-PART-2ContractMonthlyClaimsSystem\\ClaimSystem\\ClaimSystem.csproj": {}
   },
   "projects": {
-    "C:\\Users\\lab_services_student\\Source\\Repos\\PROG6212POE-PART-1ContractMonthlyClaimsSystem\\ClaimSystem\\ClaimSystem.csproj": {
+    "C:\\Users\\lab_services_student\\Desktop\\PROG6212POE-PART-2ContractMonthlyClaimsSystem\\ClaimSystem\\ClaimSystem.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\lab_services_student\\Source\\Repos\\PROG6212POE-PART-1ContractMonthlyClaimsSystem\\ClaimSystem\\ClaimSystem.csproj",
+        "projectUniqueName": "C:\\Users\\lab_services_student\\Desktop\\PROG6212POE-PART-2ContractMonthlyClaimsSystem\\ClaimSystem\\ClaimSystem.csproj",
         "projectName": "ClaimSystem",
-        "projectPath": "C:\\Users\\lab_services_student\\Source\\Repos\\PROG6212POE-PART-1ContractMonthlyClaimsSystem\\ClaimSystem\\ClaimSystem.csproj",
+        "projectPath": "C:\\Users\\lab_services_student\\Desktop\\PROG6212POE-PART-2ContractMonthlyClaimsSystem\\ClaimSystem\\ClaimSystem.csproj",
         "packagesPath": "C:\\Users\\lab_services_student\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\lab_services_student\\Source\\Repos\\PROG6212POE-PART-1ContractMonthlyClaimsSystem\\ClaimSystem\\obj\\",
+        "outputPath": "C:\\Users\\lab_services_student\\Desktop\\PROG6212POE-PART-2ContractMonthlyClaimsSystem\\ClaimSystem\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

@@ -8,6 +8,7 @@
 <h2>Add Employee</h2>
 
 <form asp-action="AddEmployee" method="post">
+    @Html.AntiForgeryToken()
     <div class="form-group">
         <label asp-for="Name"></label>
         <input asp-for="Name" class="form-control" />
@@ -31,14 +32,14 @@
         <input asp-for="DefaultRatePerJob" class="form-control" />
         <span asp-validation-for="DefaultRatePerJob" class="text-danger"></span>
     </div>
-
+    
     <div class="form-group">
         <label asp-for="RoleName"></label>
         <select asp-for="RoleName" class="form-control">
-            <option value="Worker">Worker</option>
-            <option value="ProjectManager">Project Manager</option>
-            <option value="ConstructionManager">Construction Manager</option>
-            <option value="HR">HR</option>
+            <option value="Lecturer">Worker</option>
+            <option value="HumanResource">Project Manager</option>
+            <option value="Manager">Construction Manager</option>
+            <option value="HumanResource">HR</option>
         </select>
         <span asp-validation-for="RoleName" class="text-danger"></span>
     </div>

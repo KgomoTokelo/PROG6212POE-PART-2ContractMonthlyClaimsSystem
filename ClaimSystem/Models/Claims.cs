@@ -16,7 +16,7 @@ namespace ClaimSystem.Models
         public int HoursWorked { get; set; }
 
         [Required(ErrorMessage = "Amount is required")]
-        [Range(60.00, 98.00, ErrorMessage = "Amount must be between 60.00 and 98.00. Maximum Rates for Stem department is 98.00 and NON-Stem department 88.00 .")]
+        [Range(60.00, 15000.00, ErrorMessage = "Amount must be between 60.00 and 98.00. Maximum Rates for Stem department is 98.00 and NON-Stem department 88.00 .")]
         public decimal HourlyRate { get; set; } //added for poe
         public status Status { get; set; }     // Draft, Submitted, Approved, Rejected, Settled
         public string Comments { get; set; }

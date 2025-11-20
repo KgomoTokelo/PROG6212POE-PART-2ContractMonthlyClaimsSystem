@@ -22,6 +22,10 @@ namespace ClaimSystem.Models
             [Required]
             public string Department { get; set; }
 
+        public string Email { get; set; }
+        
+        public string Password { get; set; }
+
         [Required]
         [Range(0, 999999)]
         public decimal DefaultRatePerJob { get; set; }

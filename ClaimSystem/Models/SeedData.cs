@@ -57,7 +57,11 @@ namespace ClaimSystem.Models
                     Surname = "Manager",
                     Department = "Admin",
                     DefaultRatePerJob = 0,
-                    RoleName = "HumanResource"
+                    RoleName = "HumanResource",
+                    Email = hrEmail,
+                    Password = "Hr@123!"
+
+
                 });
 
                 await context.SaveChangesAsync();
@@ -85,7 +89,9 @@ namespace ClaimSystem.Models
                     Surname = "Manager",
                     Department = "Projects",
                     DefaultRatePerJob = 0,
-                    RoleName = "Coordinator"
+                    RoleName = "Coordinator",
+                    Email = codEmail,
+                    Password = "Cod@123!"
                 });
 
                 await context.SaveChangesAsync();
@@ -113,14 +119,16 @@ namespace ClaimSystem.Models
                     Surname = "Manager",
                     Department = "Construction",
                     DefaultRatePerJob = 0,
-                    RoleName = "Manager"
+                    RoleName = "Manager",
+                    Email = manEmail,
+                    Password = "Cm@123!"
                 });
 
                 await context.SaveChangesAsync();
             }
 
             // 
-            var LecturerEmail = "worker@site.com";
+            var LecturerEmail = "Lec@site.com";
             var LecturerUser = await userManager.FindByEmailAsync(LecturerEmail);
             if (LecturerUser == null)
             {
@@ -131,7 +139,7 @@ namespace ClaimSystem.Models
                     EmailConfirmed = true
                 };
 
-                await userManager.CreateAsync(LecturerUser, "Worker@123!");
+                await userManager.CreateAsync(LecturerUser, "Lec@123!");
                 await userManager.AddToRoleAsync(LecturerUser, "Lecturer");
 
                 context.Users.Add(new Users
@@ -141,7 +149,10 @@ namespace ClaimSystem.Models
                     Surname = "Builder",
                     Department = "Masonry",
                     DefaultRatePerJob = 200,
-                    RoleName = "Lecturer"
+                    RoleName = "Lecturer",
+                    Email = LecturerEmail,
+                    Password = "Lec@123!"
+
                 });
 
                 await context.SaveChangesAsync();

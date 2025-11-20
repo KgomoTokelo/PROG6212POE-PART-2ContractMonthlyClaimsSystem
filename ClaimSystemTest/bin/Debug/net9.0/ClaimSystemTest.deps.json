@@ -2400,30 +2400,6 @@
             "fileVersion": "1.0.0.0"
           }
         }
-      },
-      "Microsoft.EntityFrameworkCore.Sqlite/9.0.10.0": {
-        "runtime": {
-          "Microsoft.EntityFrameworkCore.Sqlite.dll": {
-            "assemblyVersion": "9.0.10.0",
-            "fileVersion": "9.0.1025.47514"
-          }
-        }
-      },
-      "Microsoft.Data.Sqlite/9.0.10.0": {
-        "runtime": {
-          "Microsoft.Data.Sqlite.dll": {
-            "assemblyVersion": "9.0.10.0",
-            "fileVersion": "9.0.1025.47514"
-          }
-        }
-      },
-      "SQLitePCLRaw.core/2.1.10.2445": {
-        "runtime": {
-          "SQLitePCLRaw.core.dll": {
-            "assemblyVersion": "2.1.10.2445",
-            "fileVersion": "2.1.10.2445"
-          }
-        }
       }
     }
   },
@@ -3653,21 +3629,6 @@
     },
     "ClaimSystem/1.0.0": {
       "type": "project",
-      "serviceable": false,
-      "sha512": ""
-    },
-    "Microsoft.EntityFrameworkCore.Sqlite/9.0.10.0": {
-      "type": "reference",
-      "serviceable": false,
-      "sha512": ""
-    },
-    "Microsoft.Data.Sqlite/9.0.10.0": {
-      "type": "reference",
-      "serviceable": false,
-      "sha512": ""
-    },
-    "SQLitePCLRaw.core/2.1.10.2445": {
-      "type": "reference",
       "serviceable": false,
       "sha512": ""
     }

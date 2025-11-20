@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ClaimSystem.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251119222326_InitSqlServer")]
-    partial class InitSqlServer
+    [Migration("20251120211558_update")]
+    partial class update
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -106,6 +106,9 @@ namespace ClaimSystem.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("LecturerID"));
 
+                    b.Property<decimal>("DefaultRatePerJob")
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<string>("Department")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -118,7 +121,16 @@ namespace ClaimSystem.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Surname")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("UsersId")
+                        .HasColumnType("int");
+
                     b.HasKey("LecturerID");
+
+                    b.HasIndex("UsersId");
 
                     b.ToTable("Lecturers");
                 });
@@ -167,11 +179,19 @@ namespace ClaimSystem.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("IdentityUserId")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Password")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -421,6 +441,17 @@ namespace ClaimSystem.Migrations
                         .IsRequired();
 
                     b.Navigation("Lecturer");
+                });
+
+            modelBuilder.Entity("ClaimSystem.Models.Lecturer", b =>
+                {
+                    b.HasOne("ClaimSystem.Models.Users", "Users")
+                        .WithMany()
+                        .HasForeignKey("UsersId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Users");
                 });
 
             modelBuilder.Entity("ClaimSystem.Models.UploadDocuments", b =>

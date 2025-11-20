@@ -47,13 +47,13 @@ namespace ABCRetailers.Controllers
                 .ToListAsync();
 
 
-            return View(employees);
+            return View("~/Views/HumanResource/EmployeeList.cshtml", employees);
         }
 
 
         public IActionResult AddEmployee()
         {
-            return View(new RegisterViewModel());
+            return View("~/Views/HumanResource/AddEmployee.cshtml", new RegisterViewModel());
         }
 
 
@@ -71,6 +71,7 @@ namespace ABCRetailers.Controllers
 
             if (ModelState.IsValid)
             {
+                // 1. Create Identity user
                 var user = new IdentityUser
                 {
                     UserName = model.Email,
@@ -82,20 +83,42 @@ namespace ABCRetailers.Controllers
 
                 if (createResult.Succeeded)
                 {
+                    // 2. Add role
                     await _userManager.AddToRoleAsync(user, model.RoleName);
 
+                    // 3. Add profile in Users table
                     var profile = new Users
                     {
                         IdentityUserId = user.Id,
                         Name = model.Name,
                         Surname = model.Surname,
                         Department = model.Department,
+                        Email = model.Email,
                         DefaultRatePerJob = model.DefaultRatePerJob,
-                        RoleName = model.RoleName
+                        RoleName = model.RoleName,
+                        Password = model.TempPassword
                     };
 
                     _context.Users.Add(profile);
                     await _context.SaveChangesAsync();
+
+                    //  ADD THIS: If user is Lecturer → insert into Lecturer table
+                    if (model.RoleName == "Lecturer")
+                    {
+                        var lecturer = new Lecturer
+                        {
+                            UsersId = profile.Id,
+                            Name = model.Name,            // required
+                            Surname = model.Surname,      // required
+                            Email = model.Email,          // required
+                            Department = model.Department,
+                            DefaultRatePerJob = model.DefaultRatePerJob
+
+                        };
+
+                        _context.Lecturers.Add(lecturer);
+                        await _context.SaveChangesAsync();
+                    }
 
                     return RedirectToAction(nameof(EmployeeList));
                 }
@@ -105,9 +128,22 @@ namespace ABCRetailers.Controllers
                     ModelState.AddModelError("", error.Description);
                 }
             }
+            if (!ModelState.IsValid)
+            {
+                foreach (var state in ModelState)
+                {
+                    foreach (var error in state.Value.Errors)
+                    {
+                        Console.WriteLine($"{state.Key}: {error.ErrorMessage}");
+                    }
+                }
+            }
 
-            return View(model);
+            return View("~/Views/HumanResource/AddEmployee.cshtml", model);
         }
+
+
+
         [Authorize(Roles = "HumanResource")]
         public async Task<IActionResult> HrSummary()
         {

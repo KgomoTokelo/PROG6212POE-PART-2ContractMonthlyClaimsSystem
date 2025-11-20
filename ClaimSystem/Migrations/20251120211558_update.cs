@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ClaimSystem.Migrations
 {
     /// <inheritdoc />
-    public partial class InitSqlServer : Migration
+    public partial class update : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -51,21 +51,6 @@ namespace ClaimSystem.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Lecturers",
-                columns: table => new
-                {
-                    LecturerID = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Department = table.Column<string>(type: "nvarchar(max)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Lecturers", x => x.LecturerID);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Users",
                 columns: table => new
                 {
@@ -75,6 +60,8 @@ namespace ClaimSystem.Migrations
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Surname = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Department = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Password = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     DefaultRatePerJob = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     RoleName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Role = table.Column<int>(type: "int", nullable: false)
@@ -188,6 +175,30 @@ namespace ClaimSystem.Migrations
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Lecturers",
+                columns: table => new
+                {
+                    LecturerID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Surname = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Department = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    DefaultRatePerJob = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    UsersId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Lecturers", x => x.LecturerID);
+                    table.ForeignKey(
+                        name: "FK_Lecturers_Users_UsersId",
+                        column: x => x.UsersId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -322,6 +333,11 @@ namespace ClaimSystem.Migrations
                 column: "LecturerID");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Lecturers_UsersId",
+                table: "Lecturers",
+                column: "UsersId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_UploadDocuments_ClaimID",
                 table: "UploadDocuments",
                 column: "ClaimID");
@@ -352,9 +368,6 @@ namespace ClaimSystem.Migrations
                 name: "UploadDocuments");
 
             migrationBuilder.DropTable(
-                name: "Users");
-
-            migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
@@ -365,6 +378,9 @@ namespace ClaimSystem.Migrations
 
             migrationBuilder.DropTable(
                 name: "Lecturers");
+
+            migrationBuilder.DropTable(
+                name: "Users");
         }
     }
 }

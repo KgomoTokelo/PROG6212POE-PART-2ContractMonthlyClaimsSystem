@@ -36,8 +36,8 @@ namespace ClaimSystem.Controllers
         {
             try
             {
-                var statuses = Enum.GetValues(typeof(Claim.status))
-                    .Cast<Claim.status>()
+                var statuses = Enum.GetValues(typeof(Claims.status))
+                    .Cast<Claims.status>()
                     .Select(s => new SelectListItem
                     {
                         Text = s.ToString(),
@@ -55,7 +55,7 @@ namespace ClaimSystem.Controllers
 
                 ViewBag.LecturerList = lecturers;
 
-                return View(new Claim());
+                return View(new Claims());
             }
             catch (Exception ex)
             {
@@ -68,7 +68,7 @@ namespace ClaimSystem.Controllers
         //  a post method for creating views esstentially adds or updates database
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateClaim(Claim model)
+        public async Task<IActionResult> CreateClaim(Claims model)
         {
             try
             {
@@ -91,8 +91,8 @@ namespace ClaimSystem.Controllers
                 }
 
                 // populates dropdowns for view
-                ViewBag.StatusList = Enum.GetValues(typeof(Claim.status))
-                    .Cast<Claim.status>()
+                ViewBag.StatusList = Enum.GetValues(typeof(Claims.status))
+                    .Cast<Claims.status>()
                     .Select(s => new SelectListItem
                     {
                         Text = s.ToString(),

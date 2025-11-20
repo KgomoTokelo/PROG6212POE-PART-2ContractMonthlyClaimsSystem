@@ -1,4 +1,4 @@
-﻿@model ClaimSystem.Models.Claim
+﻿@model ClaimSystem.Models.Claims
 
 @{
     ViewData["Title"] = "Claim Details";
@@ -31,9 +31,9 @@
                         <dt class="col-sm-4">Status</dt>
                         <dd class="col-sm-8">
                             <span class="badge
-                                @(Model.Status == ClaimSystem.Models.Claim.status.Approved ? "bg-success" :
-                                                                    Model.Status == ClaimSystem.Models.Claim.status.Submitted ? "bg-info" :
-                                                                    Model.Status == ClaimSystem.Models.Claim.status.Rejected ? "bg-danger" :
+                                @(Model.Status == ClaimSystem.Models.Claims.status.Approved ? "bg-success" :
+                                                                    Model.Status == ClaimSystem.Models.Claims.status.Submitted ? "bg-info" :
+                                                                    Model.Status == ClaimSystem.Models.Claims.status.Rejected ? "bg-danger" :
                                                                     "bg-secondary")">
                                 @Model.Status
                             </span>

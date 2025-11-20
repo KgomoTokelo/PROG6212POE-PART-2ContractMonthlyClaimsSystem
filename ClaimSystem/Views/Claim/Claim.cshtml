@@ -1,4 +1,4 @@
-﻿@model IEnumerable<ClaimSystem.Models.Claim>
+﻿@model IEnumerable<ClaimSystem.Models.Claims>
 
 @{
     ViewData["Title"] = "Claims";
@@ -44,9 +44,9 @@
                         <p>
                             <strong>Status:</strong>
                             <span class="badge
-                                        @(claim.Status == ClaimSystem.Models.Claim.status.Approved ? "bg-success" :
-                                                                    claim.Status == ClaimSystem.Models.Claim.status.Submitted ? "bg-info" :
-                                                                    claim.Status == ClaimSystem.Models.Claim.status.Rejected ? "bg-danger" :
+                                        @(claim.Status == ClaimSystem.Models.Claims.status.Approved ? "bg-success" :
+                                                                    claim.Status == ClaimSystem.Models.Claims.status.Submitted ? "bg-info" :
+                                                                    claim.Status == ClaimSystem.Models.Claims.status.Rejected ? "bg-danger" :
                                                                     "bg-secondary")">
                         @claim.Status
                     </span>

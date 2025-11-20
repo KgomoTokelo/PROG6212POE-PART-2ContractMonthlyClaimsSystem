@@ -1,4 +1,4 @@
-﻿@model IEnumerable<ClaimSystem.Models.Claim>
+﻿@model IEnumerable<ClaimSystem.Models.Claims>
 
 @{
     ViewBag.Title = "Monthly Contract Claim System Dashboard";
@@ -6,10 +6,10 @@
 
     // Safe null-check for Model
     var totalClaims = Model?.Count() ?? 0;
-    var verifiedClaims = Model?.Count(c => c.Status == ClaimSystem.Models.Claim.status.Verefied) ?? 0;
-    var pendingClaims = Model?.Count(c => c.Status == ClaimSystem.Models.Claim.status.Submitted) ?? 0;
-    var approvedClaims = Model?.Count(c => c.Status == ClaimSystem.Models.Claim.status.Approved) ?? 0;
-    var rejectedClaims = Model?.Count(c => c.Status == ClaimSystem.Models.Claim.status.Rejected || c.Status == ClaimSystem.Models.Claim.status.Decline) ?? 0;
+    var verifiedClaims = Model?.Count(c => c.Status == ClaimSystem.Models.Claims.status.Verefied) ?? 0;
+    var pendingClaims = Model?.Count(c => c.Status == ClaimSystem.Models.Claims.status.Submitted) ?? 0;
+    var approvedClaims = Model?.Count(c => c.Status == ClaimSystem.Models.Claims.status.Approved) ?? 0;
+    var rejectedClaims = Model?.Count(c => c.Status == ClaimSystem.Models.Claims.status.Rejected || c.Status == ClaimSystem.Models.Claims.status.Decline) ?? 0;
     var totalAmount = Model?.Sum(c => c.HoursWorked * (double)c.HourlyRate) ?? 0;
 }
 
@@ -83,10 +83,10 @@
                         <td>@claim.ModuleName</td>
                         <td>
                             <span class="badge
-                                        @(claim.Status == ClaimSystem.Models.Claim.status.Approved ? "bg-success" :
-                                                                    claim.Status == ClaimSystem.Models.Claim.status.Submitted ? "bg-info" :
-                                                                    claim.Status == ClaimSystem.Models.Claim.status.Rejected || claim.Status == ClaimSystem.Models.Claim.status.Decline ? "bg-danger" :
-                                                                    claim.Status == ClaimSystem.Models.Claim.status.Verefied ? "bg-primary" :
+                                        @(claim.Status == ClaimSystem.Models.Claims.status.Approved ? "bg-success" :
+                                                                    claim.Status == ClaimSystem.Models.Claims.status.Submitted ? "bg-info" :
+                                                                    claim.Status == ClaimSystem.Models.Claims.status.Rejected || claim.Status == ClaimSystem.Models.Claims.status.Decline ? "bg-danger" :
+                                                                    claim.Status == ClaimSystem.Models.Claims.status.Verefied ? "bg-primary" :
                                                                     "bg-secondary")">
                         @claim.Status
                     </span>

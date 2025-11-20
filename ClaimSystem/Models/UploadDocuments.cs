@@ -12,6 +12,6 @@ namespace ClaimSystem.Models
         public DateTime UploadDate { get; set; }
 
         // Navigation
-        public Claim Claim { get; set; }
+        public Claims Claim { get; set; }
     }
 }

@@ -1,202 +1,168 @@
-﻿using ABCRetailers.Data;
-using ABCRetailers.Models.ViewModels;
+﻿using ABCRetailers.Models.ViewModels;
+using ClaimSystem.Models;
 using ClaimSystem.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using System.Security.Claims;
-using Claim = ClaimSystem.Models.Claim;
-
 
 namespace ABCRetailers.Controllers
 {
+    [Authorize(Roles = "HR")]
     public class LoginController : Controller
     {
-        private readonly AuthDbContext _db;
-   
-        private readonly ILogger<LoginController> _logger;
+            private readonly ApplicationDbContext _context;
 
-        public LoginController(AuthDbContext db, ILogger<LoginController> logger)
-        {
-            _db = db;
-            _logger = logger;
-        }
+            private readonly UserManager<IdentityUser> _userManager;
 
-        // =====================================
-        // GET: /Login
-        // =====================================
-        [HttpGet]
-        [AllowAnonymous]
-        public IActionResult Index(string? returnUrl = null)
-        {
-            ViewData["ReturnUrl"] = returnUrl;
-            return View(new LoginViewModel());
-        }
+            private readonly RoleManager<IdentityRole> _roleManager;
 
-        // =====================================
-        // POST: /Login
-        // =====================================
-        [HttpPost]
-        [AllowAnonymous]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Index(LoginViewModel model, string? returnUrl = null)
-        {
-            if (!ModelState.IsValid)
-                return View(model);
 
-            try
+            public LoginController(
+                ApplicationDbContext context,
+                UserManager<IdentityUser> userManager,
+                RoleManager<IdentityRole> roleManager)
             {
-                // 1️⃣ Verify user in SQL database
-                var user = await _db.Users.FirstOrDefaultAsync(u => u.Name == model.Username);
-                if (user == null)
+
+                _context = context;
+
+                _userManager = userManager;
+
+                _roleManager = roleManager;
+            }
+
+
+            public async Task<IActionResult> EmployeeList()
+            {
+
+                var employees = await _context.Users
+                    .ToListAsync();
+
+
+                return View(employees);
+            }
+
+
+            public IActionResult AddEmployee()
+            {
+                return View(new RegisterViewModel());
+            }
+
+
+
+            [HttpPost]
+            [ValidateAntiForgeryToken]
+
+
+            public async Task<IActionResult> AddEmployee(AddEmployeeViewModel model)
+            {
+                var roleExists = await _roleManager.RoleExistsAsync(model.RoleName);
+
+                if (!roleExists)
                 {
-                    ViewBag.Error = "Invalid username or password.";
-                    return View(model);
+                    ModelState.AddModelError("", $"Role '{model.RoleName}' does not exist.");
                 }
 
-                // ⚠️ For now, simple password check (later replace with hashing)
-                if (user.Password != model.Password)
+                if (ModelState.IsValid)
                 {
-                    ViewBag.Error = "Invalid username or password.";
-                    return View(model);
-                }
-
-                // 2️⃣ Fetch customer record from Azure Function
-                var Lecturers = await _db..;
-                if (Lecturers == null)
-                {
-                    _logger.LogWarning("No matching customer found in Azure for username {Username}", user.Username);
-                    ViewBag.Error = "No customer record found in the system.";
-                    return View(model);
-                }
-
-                // 3️⃣ Build authentication claims
-                var claims = new List<ClaimSystem.Models.Claim>
-                {
-                    new ClaimSystem.Models.Claim(ClaimTypes.Name, user.Name),
-                    new Claim(ClaimTypes.Role, user.Role),
-                    new Claim("LecturerID", user.UserID)
-                };
-
-                var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-                var principal = new ClaimsPrincipal(identity);
-
-                // 4️⃣ Sign-in with unified cookie scheme
-                await HttpContext.SignInAsync(
-                    CookieAuthenticationDefaults.AuthenticationScheme,
-                    principal,
-                    new AuthenticationProperties
+                    var user = new IdentityUser
                     {
-                        IsPersistent = true,
-                        ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(60)
-                    });
+                        UserName = model.Email,
+                        Email = model.Email,
+                        EmailConfirmed = true
+                    };
 
-                // 5️⃣ Store session data
-                HttpContext.Session.SetString("Username", user.Name);
-                HttpContext.Session.SetString("Role", user.Role);
-                HttpContext.Session.SetString("CustomerId", Lecturers.);
+                    var createResult = await _userManager.CreateAsync(user, model.TempPassword);
 
-                // 6️⃣ Redirect appropriately
-                if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
-                    return Redirect(returnUrl);
+                    if (createResult.Succeeded)
+                    {
+                        await _userManager.AddToRoleAsync(user, model.RoleName);
 
-                return user.Role switch
+                        var profile = new EmployeeProfile
+                        {
+                            UserId = user.Id,
+                            Name = model.Name,
+                            Surname = model.Surname,
+                            Department = model.Department,
+                            DefaultRatePerJob = model.DefaultRatePerJob,
+                            RoleName = model.RoleName
+                        };
+
+                        _context.EmployeeProfiles.Add(profile);
+                        await _context.SaveChangesAsync();
+
+                        return RedirectToAction(nameof(EmployeeList));
+                    }
+
+                    foreach (var error in createResult.Errors)
+                    {
+                        ModelState.AddModelError("", error.Description);
+                    }
+                }
+
+                return View(model);
+            }
+            [Authorize(Roles = "HR")]
+            public async Task<IActionResult> HrSummary()
+            {
+                var claims = await _context.WorkClaims.ToListAsync();
+
+                var totalCount = claims.Count;
+                var totalAmount = claims.Sum(c => c.TotalAmount);
+                var submittedCount = claims.Count(c => c.Status == "Submitted");
+                var pmRejectedCount = claims.Count(c => c.Status == "PM Rejected");
+                var cmRejectedCount = claims.Count(c => c.Status == "CM Rejected");
+                var approvedCount = claims.Count(c => c.Status == "CM Approved");
+                var paidCount = claims.Count(c => c.Status == "Paid");
+
+                ViewBag.TotalCount = totalCount;
+                ViewBag.TotalAmount = totalAmount;
+                ViewBag.SubmittedCount = submittedCount;
+                ViewBag.PmRejectedCount = pmRejectedCount;
+                ViewBag.CmRejectedCount = cmRejectedCount;
+                ViewBag.ApprovedCount = approvedCount;
+                ViewBag.PaidCount = paidCount;
+
+                return View();
+            }
+
+            [Authorize(Roles = "HR")]
+            public async Task<FileResult> HrExportCsv()
+            {
+                var claims = await _context.WorkClaims
+                    .OrderBy(c => c.Id)
+                    .ToListAsync();
+
+                var lines = new List<string>();
+                lines.Add("Id,Date,Name,Surname,Department,RatePerJob,NumberOfJobs,TotalAmount,Status,RejectReason");
+
+                foreach (var c in claims)
                 {
-                    "Admin" => RedirectToAction("AdminDashboard", "Home"),
-                    _ => RedirectToAction("CustomerDashboard", "Home")
-                };
+                    var line =
+                        $"{c.Id}," +
+                        $"{c.CreatedAt:yyyy-MM-dd}," +
+                        $"{c.Name}," +
+                        $"{c.Surname}," +
+                        $"{c.Department}," +
+                        $"{c.RatePerJob}," +
+                        $"{c.NumberOfJobs}," +
+                        $"{c.TotalAmount}," +
+                        $"{c.Status}," +
+                        $"{c.RejectReason?.Replace(",", " ")}";
+
+                    lines.Add(line);
+                }
+
+                var csv = string.Join("\n", lines);
+                var bytes = System.Text.Encoding.UTF8.GetBytes(csv);
+
+                return File(bytes, "text/csv", "claims_export.csv");
             }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Unexpected login error for user {Username}", model.Username);
-                ViewBag.Error = "Unexpected error occurred during login. Please try again later.";
-                return View(model);
-            }
+
+
         }
-
-        // =====================================
-        // GET: /Login/Register
-        // =====================================
-        [HttpGet]
-        [AllowAnonymous]
-        public IActionResult Register()
-        {
-            return View(new RegisterViewModel());
-        }
-
-        // =====================================
-        // POST: /Login/Register
-        // =====================================
-        [HttpPost]
-        [AllowAnonymous]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Register(RegisterViewModel model)
-        {
-            if (!ModelState.IsValid)
-                return View(model);
-
-            // 1️⃣ Check duplicate username
-            var exists = await _db.Users.AnyAsync(u => u.Username == model.Username);
-            if (exists)
-            {
-                ViewBag.Error = "Username already exists.";
-                return View(model);
-            }
-
-            try
-            {
-                // 2️⃣ Save local user (SQL)
-                var user = new User
-                {
-                    Username = model.Username,
-                    PasswordHash = model.Password, // TODO: Replace with hashed password later
-                    Role = model.Role
-                };
-                _db.Users.Add(user);
-                await _db.SaveChangesAsync();
-
-                // 3️⃣ Save to Azure Function
-                var customer = new Customer
-                {
-                    Username = model.Username,
-                    Name = model.FirstName,
-                    Surname = model.LastName,
-                    Email = model.Email,
-                    ShippingAddress = model.ShippingAddress
-                };
-
-                await _functionsApi.CreateCustomerAsync(customer);
-
-                TempData["Success"] = "Registration successful! Please log in.";
-                return RedirectToAction("Index");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Registration failed for user {Username}", model.Username);
-                ViewBag.Error = "Could not complete registration. Please try again later.";
-                return View(model);
-            }
-        }
-
-        // =====================================
-        // LOGOUT
-        // =====================================
-        [Authorize]
-        public async Task<IActionResult> Logout()
-        {
-            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-            HttpContext.Session.Clear();
-            return RedirectToAction("Index", "Home");
-        }
-
-        // =====================================
-        // ACCESS DENIED
-        // =====================================
-        [HttpGet]
-        [AllowAnonymous]
-        public IActionResult AccessDenied() => View();
     }
-}

@@ -29,7 +29,7 @@ namespace ClaimSystemTest
         public void Claim_TotalAmount_ShouldBeCalculatedCorrectly()
         {
             // Arrange
-            var claim = new Claim
+            var claim = new Claims
             {
                 HoursWorked = 10,
                 HourlyRate = 200
@@ -46,13 +46,13 @@ namespace ClaimSystemTest
         public void RejectClaim_ShouldChangeStatusToRejected()
         {
             // Arrange
-            var claim = new Claim { Status = Claim.status.Submitted };
+            var claim = new Claims { Status = Claims.status.Submitted };
 
             // Act
-            claim.Status = Claim.status.Rejected;
+            claim.Status = Claims.status.Rejected;
 
             // Assert
-            Assert.Equal(Claim.status.Rejected, claim.Status);
+            Assert.Equal(Claims.status.Rejected, claim.Status);
         }
 
 

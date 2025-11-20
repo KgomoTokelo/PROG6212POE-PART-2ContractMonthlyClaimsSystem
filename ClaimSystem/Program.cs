@@ -1,18 +1,23 @@
 using ClaimSystem.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
 
 namespace ClaimSystem
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
             // Connect to SQLite
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+            builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = false)
+                .AddRoles<IdentityRole>()
+                .AddEntityFrameworkStores<ApplicationDbContext>();
             
             builder.Services.AddControllersWithViews();
             builder.Services.AddRazorPages();
@@ -22,7 +27,12 @@ namespace ClaimSystem
 
             var app = builder.Build();
 
-            
+            using (var scope = app.Services.CreateScope())
+            {
+                var services = scope.ServiceProvider;
+                await SeedData.InitializeAsync(services);
+            }
+
             if (app.Environment.IsDevelopment())
             {
                 app.UseMigrationsEndPoint();
@@ -37,7 +47,10 @@ namespace ClaimSystem
             app.UseStaticFiles();
 
             app.UseRouting();
+            app.UseAuthentication();//
             app.UseAuthorization();
+            
+            
 
             // Map routes
             app.MapControllerRoute(

@@ -11,6 +11,6 @@ namespace ClaimSystem.Models
         public string Department { get; set; }
 
         // Navigation
-        public ICollection<Claim> Claims { get; set; }
+        public ICollection<Claims> Claims { get; set; }
     }
 }

@@ -13,8 +13,8 @@ namespace ClaimSystem.Models
         public string Comments { get; set; }
 
         // Navigation
-        public Claim Claim { get; set; }
-        public User? User { get; set; }
+        public Claims Claim { get; set; }
+        public Users? User { get; set; }
 
         
     }

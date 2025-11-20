@@ -20,8 +20,8 @@ namespace ClaimSystem.Controllers
         {
             try
             {
-                var statuses = Enum.GetValues(typeof(Claim.status))
-                    .Cast<Claim.status>()
+                var statuses = Enum.GetValues(typeof(Claims.status))
+                    .Cast<Claims.status>()
                     .Select(s => new SelectListItem
                     {
                         Text = s.ToString(),
@@ -32,7 +32,7 @@ namespace ClaimSystem.Controllers
 
                 var claims = await _context.Claims
                     .Include(c => c.Lecturer)
-                    .Where(c => c.Status == Claim.status.Verefied)
+                    .Where(c => c.Status == Claims.status.Verefied)
                     .ToListAsync();
 
                 return View(claims);
@@ -55,7 +55,7 @@ namespace ClaimSystem.Controllers
                 if (claim == null)
                     return NotFound();
 
-                claim.Status = Claim.status.Approved;
+                claim.Status = Claims.status.Approved;
                 _context.Update(claim);
                 await _context.SaveChangesAsync();
 
@@ -86,7 +86,7 @@ namespace ClaimSystem.Controllers
                 if (claim == null)
                     return NotFound();
 
-                claim.Status = Claim.status.Decline;
+                claim.Status = Claims.status.Decline;
                 claim.Comments = comments;
 
                 _context.Update(claim);
@@ -94,7 +94,7 @@ namespace ClaimSystem.Controllers
 
                 var claims = await _context.Claims
                     .Include(c => c.Lecturer)
-                    .Where(c => c.Status == Claim.status.Verefied)
+                    .Where(c => c.Status == Claims.status.Verefied)
                     .ToListAsync();
 
                 TempData["InfoMessage"] = "Claim declined successfully.";
@@ -121,7 +121,7 @@ namespace ClaimSystem.Controllers
             {
                 var claims = await _context.Claims
                     .Include(c => c.Lecturer)
-                    .Where(c => c.Status == Claim.status.Submitted)
+                    .Where(c => c.Status == Claims.status.Submitted)
                     .ToListAsync();
 
                 return View(claims);
@@ -144,7 +144,7 @@ namespace ClaimSystem.Controllers
                 if (claim == null)
                     return NotFound();
 
-                claim.Status = Claim.status.Verefied;
+                claim.Status = Claims.status.Verefied;
                 _context.Update(claim);
                 await _context.SaveChangesAsync();
 
@@ -181,7 +181,7 @@ namespace ClaimSystem.Controllers
                 }
 
                 // Update claim status
-                claim.Status = Claim.status.Rejected;
+                claim.Status = Claims.status.Rejected;
                 _context.Update(claim);
 
                 // Create approval record
@@ -200,7 +200,7 @@ namespace ClaimSystem.Controllers
                 // Reload claims still needing verification
                 var claims = await _context.Claims
                     .Include(c => c.Lecturer)
-                    .Where(c => c.Status == Claim.status.Submitted)
+                    .Where(c => c.Status == Claims.status.Submitted)
                     .ToListAsync();
 
                 TempData["InfoMessage"] = "Claim rejected successfully.";

@@ -65,9 +65,9 @@ namespace ClaimSystem.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("HrDashBoard", "Login");
             }
-            return View(user);
+            return View("~/Views/HumanResource/HrDashBoard.cshtml",user);
         }
 
         private bool UserExists(int id)
@@ -94,21 +94,30 @@ namespace ClaimSystem.Controllers
 
             return View("~/Views/HumanResource/Delete.cshtml", user); 
         }
-
-     
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
+            // Find the user
             var user = await _context.Users.FindAsync(id);
-            if (user != null)
+            if (user == null)
+                return NotFound();
+
+            // Check if a lecturer is related to user
+            var lecturer = await _context.Lecturers.FirstOrDefaultAsync(l => l.UsersId == id);
+            if (lecturer != null)
             {
-                _context.Users.Remove(user);
+                // Removes lecturer
+                _context.Lecturers.Remove(lecturer);
                 await _context.SaveChangesAsync();
             }
-            return RedirectToAction(nameof(Index));
-        }
 
+            //  removes user
+            _context.Users.Remove(user);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("HrDashBoard", "Login");
+        }
         public async Task<IActionResult> View(int? id)
         {
             if (id == null)

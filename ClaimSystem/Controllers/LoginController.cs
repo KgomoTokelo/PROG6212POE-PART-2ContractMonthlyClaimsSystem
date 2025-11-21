@@ -34,15 +34,18 @@ namespace ABCRetailers.Controllers
 
             _roleManager = roleManager;
         }
+
+        //this calls view hrdashboard
         public IActionResult HrDashBoard()
         {
             return View("~/Views/HumanResource/HrDashBoard.cshtml");
 
         }
 
+        //This List all employees
         public async Task<IActionResult> EmployeeList()
         {
-
+           // loads all employees from database
             var employees = await _context.Users
                 .ToListAsync();
 
@@ -50,18 +53,19 @@ namespace ABCRetailers.Controllers
             return View("~/Views/HumanResource/EmployeeList.cshtml", employees);
         }
 
-
+        // loads view 
         public IActionResult AddEmployee()
         {
             return View("~/Views/HumanResource/AddEmployee.cshtml", new RegisterViewModel());
         }
 
 
-
+        //
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddEmployee(RegisterViewModel model)
         {
+            //
             var roleExists = await _roleManager.RoleExistsAsync(model.RoleName);
 
             if (!roleExists)
@@ -71,7 +75,7 @@ namespace ABCRetailers.Controllers
 
             if (ModelState.IsValid)
             {
-                // 1. Create Identity user
+                //it Creates Identity user
                 var user = new IdentityUser
                 {
                     UserName = model.Email,
@@ -83,10 +87,10 @@ namespace ABCRetailers.Controllers
 
                 if (createResult.Succeeded)
                 {
-                    // 2. Add role
+                    // adds role
                     await _userManager.AddToRoleAsync(user, model.RoleName);
 
-                    // 3. Add profile in Users table
+                    // this is a user template based of Users table
                     var profile = new Users
                     {
                         IdentityUserId = user.Id,
@@ -102,7 +106,7 @@ namespace ABCRetailers.Controllers
                     _context.Users.Add(profile);
                     await _context.SaveChangesAsync();
 
-                    //  ADD THIS: If user is Lecturer → insert into Lecturer table
+                    //  This checks if user is Lecturer a if user is a lectuere it insert into Lecturer table
                     if (model.RoleName == "Lecturer")
                     {
                         var lecturer = new Lecturer
@@ -151,7 +155,7 @@ namespace ABCRetailers.Controllers
 
             var totalCount = claims.Count;
 
-            // to calculate totalamount 
+            // calculates totalamount 
             var totalAmount = claims.Sum(c => c.HoursWorked * c.HourlyRate);
 
             var submittedCount = claims.Count(c => c.Status == Claims.status.Submitted);
@@ -179,7 +183,7 @@ namespace ABCRetailers.Controllers
         {
             var claims = await _context.Claims
                 .OrderBy(c => c.ClaimID)
-                .Include(c => c.Lecturer)   // optional: export lecturer names
+                .Include(c => c.Lecturer)   //export lecturer names
                 .ToListAsync();
 
             var lines = new List<string>();

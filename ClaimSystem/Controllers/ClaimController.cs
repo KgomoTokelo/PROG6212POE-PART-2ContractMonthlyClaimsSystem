@@ -23,7 +23,7 @@ namespace ClaimSystem.Controllers
         {
             try
             {
-                // 1. Get logged-in Identity user GUID
+                // Get logged-in Identity user GUID
                 var identityUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
                 if (string.IsNullOrEmpty(identityUserId))
                 {
@@ -31,7 +31,7 @@ namespace ClaimSystem.Controllers
                     return View("Error");
                 }
 
-                // 2. Find local Users record
+                // Find local Users record
                 var user = await _context.Users
                     .FirstOrDefaultAsync(u => u.IdentityUserId == identityUserId);
 
@@ -41,7 +41,7 @@ namespace ClaimSystem.Controllers
                     return View("Error");
                 }
 
-                // 3. Find lecturer record linked to this user
+                // Find lecturer record linked to this user
                 var lecturer = await _context.Lecturers
                     .FirstOrDefaultAsync(l => l.UsersId == user.Id);
 
@@ -51,7 +51,7 @@ namespace ClaimSystem.Controllers
                     return View("Error");
                 }
 
-                // 4. Fetch claims for this lecturer
+                // Fetch claims for this lecturer
                 var claims = await _context.Claims
                     .Where(c => c.LecturerID == lecturer.LecturerID)
                     .Include(c => c.Lecturer)
@@ -68,7 +68,7 @@ namespace ClaimSystem.Controllers
             }
         }
 
-        // GET: CreateClaim
+        // CreateClaim
         [HttpGet]
         public async Task<IActionResult> CreateClaim()
         {
@@ -114,7 +114,7 @@ namespace ClaimSystem.Controllers
             }
         }
 
-        // POST: CreateClaim
+        //  CreateClaim
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateClaim(Claims model)

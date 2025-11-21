@@ -51,10 +51,11 @@
     </div>
 
     <div class="form-group">
-        <label asp-for="TempPassword"></label>
+        <label>Password</label>
         <input asp-for="TempPassword" class="form-control" type="password" />
         <span asp-validation-for="TempPassword" class="text-danger"></span>
     </div>
+
 
     <button type="submit" class="btn btn-primary">Create Employee</button>
     <a asp-action="EmployeeList" class="btn btn-secondary">Back to List</a>

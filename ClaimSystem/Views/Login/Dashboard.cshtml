@@ -1,5 +1,32 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
+﻿@{
+    ViewData["Title"] = "Welcome to ClaimSystem";
 }
+
+<div class="text-center mt-5">
+    <h1 class="display-4">Welcome to ClaimSystem</h1>
+    <p class="lead mt-3">
+        ClaimSystem is designed to streamline the workflow of claims and employee management in your organization.
+    </p>
+
+    <div class="mt-5">
+        <h3>How the System Works</h3>
+        <ul class="list-group list-group-flush mt-3" style="max-width:600px; margin:auto;">
+            <li class="list-group-item">
+                <strong>Lecturers:</strong> Submit claims for teaching or project hours.
+            </li>
+            <li class="list-group-item">
+                <strong>Coordinators:</strong> Verify submitted claims based on guidelines.
+            </li>
+            <li class="list-group-item">
+                <strong>Managers:</strong> Approve verified claims.
+            </li>
+            <li class="list-group-item">
+                <strong>HR:</strong> Create employees, view existing employees, and download CSV files. Claims are not visible here.
+            </li>
+        </ul>
+    </div>
+
+    <div class="mt-5">
+        <p class="text-muted">Use the navigation menu to go to your role-specific portal.</p>
+    </div>
+</div>

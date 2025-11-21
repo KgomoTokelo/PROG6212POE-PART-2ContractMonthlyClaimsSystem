@@ -170,7 +170,7 @@ namespace ABCRetailers.Controllers
             ViewBag.DeclinedCount = declinedCount;
             ViewBag.SettledCount = settledCount;
 
-            return View();
+            return View("~/Views/HumanResource/HrSummary.cshtml");
         }
 
 

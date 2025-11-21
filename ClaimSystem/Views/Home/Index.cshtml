@@ -1,117 +1,151 @@
-﻿@model IEnumerable<ClaimSystem.Models.Claims>
-
-@{
-    ViewBag.Title = "Monthly Contract Claim System Dashboard";
-    Layout = "~/Views/Shared/_Layout.cshtml";
-
-    // Safe null-check for Model
-    var totalClaims = Model?.Count() ?? 0;
-    var verifiedClaims = Model?.Count(c => c.Status == ClaimSystem.Models.Claims.status.Verefied) ?? 0;
-    var pendingClaims = Model?.Count(c => c.Status == ClaimSystem.Models.Claims.status.Submitted) ?? 0;
-    var approvedClaims = Model?.Count(c => c.Status == ClaimSystem.Models.Claims.status.Approved) ?? 0;
-    var rejectedClaims = Model?.Count(c => c.Status == ClaimSystem.Models.Claims.status.Rejected || c.Status == ClaimSystem.Models.Claims.status.Decline) ?? 0;
-    var totalAmount = Model?.Sum(c => c.HoursWorked * (double)c.HourlyRate) ?? 0;
+﻿@{
+    ViewData["Title"] = "Welcome to ClaimSystem";
 }
 
-<h2 class="mb-4">📊 Monthly Contract Claim System - Dashboard</h2>
-
-@if (ViewBag.ErrorMessage != null)
-{
-    <div class="alert alert-danger">@ViewBag.ErrorMessage</div>
-}
-
-<div class="d-flex flex-wrap gap-4 mt-3">
-
-    <!-- Card: Total Claims -->
-    <div class="flex-fill p-4 rounded shadow-sm bg-light">
-        <h5>Total Claims</h5>
-        <p class="fs-3 fw-bold text-primary">@totalClaims</p>
+<div class="container mt-5">
+    <!-- Hero Section -->
+    <div class="jumbotron text-center p-5 rounded bg-primary text-white shadow-lg">
+        <h1 class="display-3">Welcome to ClaimSystem</h1>
+        <p class="lead mt-3">
+            Your all-in-one platform to manage claims, employees, and approvals efficiently.
+        </p>
+        <hr class="my-4 bg-light">
+        <p class="h5">Get started by navigating to your role-specific portal below.</p>
     </div>
 
-    <!-- Card: Verified Claims -->
-    <div class="flex-fill p-4 rounded shadow-sm" style="background-color: #d1e7dd;">
-        <h5>Verified Claims</h5>
-        <p class="fs-3 fw-bold text-success">@verifiedClaims</p>
+    <!-- Role Cards -->
+    <div class="row mt-5 g-4">
+        <!-- Lecturer Card -->
+        <div class="col-md-3">
+            <div class="card h-100 text-center shadow-sm border-primary">
+                <div class="card-body">
+                    <div class="mb-3">
+                        <i class="bi bi-person-lines-fill display-3 text-primary"></i>
+                    </div>
+                    <h5 class="card-title">Lecturers</h5>
+                    <p class="card-text">
+                        Submit claims for teaching hours or projects and track their progress.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Coordinator Card -->
+        <div class="col-md-3">
+            <div class="card h-100 text-center shadow-sm border-success">
+                <div class="card-body">
+                    <div class="mb-3">
+                        <i class="bi bi-check2-square display-3 text-success"></i>
+                    </div>
+                    <h5 class="card-title">Coordinators</h5>
+                    <p class="card-text">
+                        Verify submitted claims according to guidelines and provide feedback.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Manager Card -->
+        <div class="col-md-3">
+            <div class="card h-100 text-center shadow-sm border-warning">
+                <div class="card-body">
+                    <div class="mb-3">
+                        <i class="bi bi-hand-thumbs-up display-3 text-warning"></i>
+                    </div>
+                    <h5 class="card-title">Managers</h5>
+                    <p class="card-text">
+                        Approve verified claims and ensure proper processing of payments.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- HR Card -->
+        <div class="col-md-3">
+            <div class="card h-100 text-center shadow-sm border-danger">
+                <div class="card-body">
+                    <div class="mb-3">
+                        <i class="bi bi-people-fill display-3 text-danger"></i>
+                    </div>
+                    <h5 class="card-title">HR</h5>
+                    <p class="card-text">
+                        Create employees, view existing employees, and download CSVs. Claims are hidden here.
+                    </p>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <!-- Card: Pending Claims -->
-    <div class="flex-fill p-4 rounded shadow-sm" style="background-color: #fff3cd;">
-        <h5>Pending Claims</h5>
-        <p class="fs-3 fw-bold text-warning">@pendingClaims</p>
-    </div>
+    <!-- Demo Accounts Section -->
+    <div class="mt-5 p-4 rounded shadow-lg bg-light border border-info">
+        <h4 class="text-center text-info mb-3">Demo Accounts (Read-Only)</h4>
+        <p class="text-center text-muted mb-4">Use these accounts to explore the workflow. Passwords are demo-only — do not change them.</p>
 
-    <!-- Card: Approved Claims -->
-    <div class="flex-fill p-4 rounded shadow-sm" style="background-color: #cfe2ff;">
-        <h5>Approved Claims</h5>
-        <p class="fs-3 fw-bold text-primary">@approvedClaims</p>
-    </div>
-
-    <!-- Card: Total Amount -->
-    <div class="flex-fill p-4 rounded shadow-sm" style="background-color: #f8d7da;">
-        <h5>Total Amount Claimed</h5>
-        <p class="fs-3 fw-bold text-danger">R @totalAmount.ToString("N2")</p>
-    </div>
-</div>
-
-<!-- Recent Claims Table -->
-<div class="mt-5">
-    <h3>🕓 Recent Claims</h3>
-
-    @if (Model == null || !Model.Any())
-    {
-        <div class="alert alert-info mt-3">No claims found.</div>
-    }
-    else
-    {
-        <table class="table table-striped mt-3">
-            <thead class="table-primary">
-                <tr>
-                    <th>Claim ID</th>
-                    <th>Lecturer</th>
-                    <th>Module</th>
-                    <th>Status</th>
-                    <th>Month</th>
-                    <th>Amount</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var claim in Model.OrderByDescending(c => c.SubmissionDate).Take(5))
-                {
+        <div class="table-responsive">
+            <table class="table table-striped table-hover text-center align-middle">
+                <thead class="table-info">
                     <tr>
-                        <td>@claim.ClaimID</td>
-                        <td>@claim.Lecturer?.Name</td>
-                        <td>@claim.ModuleName</td>
-                        <td>
-                            <span class="badge
-                                        @(claim.Status == ClaimSystem.Models.Claims.status.Approved ? "bg-success" :
-                                                                    claim.Status == ClaimSystem.Models.Claims.status.Submitted ? "bg-info" :
-                                                                    claim.Status == ClaimSystem.Models.Claims.status.Rejected || claim.Status == ClaimSystem.Models.Claims.status.Decline ? "bg-danger" :
-                                                                    claim.Status == ClaimSystem.Models.Claims.status.Verefied ? "bg-primary" :
-                                                                    "bg-secondary")">
-                        @claim.Status
-                    </span>
-                </td>
-                <td>@claim.SubmissionDate.ToString("MMMM")</td>
-                <td>R @((claim.HoursWorked * (double)claim.HourlyRate).ToString("N2"))</td>
-            </tr>
-                        }
-            </tbody>
-        </table>
-    }
+                        <th style="width:25%;">Role</th>
+                        <th style="width:45%;">Email</th>
+                        <th style="width:30%;">Password</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><span class="badge bg-info">HR</span></td>
+                        <td>hr@site.com</td>
+                        <td>Hr@123!</td>
+                    </tr>
+                    <tr>
+                        <td><span class="badge bg-warning text-dark">Project Manager</span></td>
+                        <td>pm@site.com</td>
+                        <td>Pm@123!</td>
+                    </tr>
+                    <tr>
+                        <td><span class="badge bg-success">Construction Manager</span></td>
+                        <td>cm@site.com</td>
+                        <td>Cm@123!</td>
+                    </tr>
+                    <tr>
+                        <td><span class="badge bg-secondary">Worker</span></td>
+                        <td>worker@site.com</td>
+                        <td>Worker@123!</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <p class="text-center mt-3 text-muted fst-italic">
+            Start by submitting a claim as Worker, then log in as PM, CM, and HR to process the claim end-to-end.
+        </p>
+    </div>
+
 </div>
 
-<!-- Quick Actions -->
-<div class="mt-5">
-    <h3>⚙️ Quick Actions</h3>
-    <div class="d-flex gap-3 mt-3">
-        <a asp-action="CreateClaim" class="btn btn-success">
-            <i class="bi bi-plus-circle"></i> Add New Claim
-        </a>
-        <a asp-controller="Approve" asp-action="Verify" class="btn btn-warning text-white">
-            <i class="bi bi-check2-circle"></i> Verify Claims
-        </a>
-        <a asp-controller="Report" asp-action="Generate" class="btn btn-info text-white">
-            <i class="bi bi-bar-chart"></i> Generate Report
-        </a>
-    </div>
-</div>
+<!-- Bootstrap Icons -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
+<style>
+    body {
+        background: linear-gradient(135deg, #e0f7fa 0%, #ffe0b2 100%);
+        min-height: 100vh;
+    }
+
+    .card {
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+
+    .table-responsive {
+        overflow-x: auto;
+    }
+
+    .badge {
+        font-size: 0.9em;
+        padding: 0.4em 0.7em;
+    }
+</style>

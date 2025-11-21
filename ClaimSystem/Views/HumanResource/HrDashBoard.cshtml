@@ -1,287 +1,80 @@
 ﻿@model IEnumerable<ClaimSystem.Models.Claims>
-@using System.Text.Json
+
 @{
-    ViewBag.Title = "Monthly Contract Claim System Dashboard";
+    ViewBag.Title = "HR Dashboard";
     Layout = "~/Views/Shared/_Layout.cshtml";
 
-    var claims = Model ?? Enumerable.Empty<ClaimSystem.Models.Claims>();
-
-    // Summary metrics
-    var totalClaims = claims.Count();
-    var verifiedClaims = claims.Count(c => c.Status == ClaimSystem.Models.Claims.status.Verefied);
-    var pendingClaims = claims.Count(c => c.Status == ClaimSystem.Models.Claims.status.Submitted);
-    var approvedClaims = claims.Count(c => c.Status == ClaimSystem.Models.Claims.status.Approved);
-    var rejectedClaims = claims.Count(c => c.Status == ClaimSystem.Models.Claims.status.Rejected || c.Status == ClaimSystem.Models.Claims.status.Decline);
-    var totalAmount = claims.Sum(c => c.HoursWorked * (double)c.HourlyRate);
-
-    // Status distribution for pie/donut
-    var statusGroups = claims.GroupBy(c => c.Status)
-                             .Select(g => new { Status = g.Key.ToString(), Count = g.Count() })
-                             .ToList();
-
-    // Monthly totals for last 6 months (or all months present)
-    var lastMonths = Enumerable.Range(0, 6)
-                               .Select(i => DateTime.Now.AddMonths(-i))
-                               .Reverse()
-                               .ToList();
-
-    var monthlyLabels = lastMonths.Select(d => d.ToString("MMM yyyy")).ToArray();
-    var monthlyTotals = lastMonths.Select(m => claims.Where(c => c.SubmissionDate.Year == m.Year && c.SubmissionDate.Month == m.Month).Sum(c => c.HoursWorked * (double)c.HourlyRate)).ToArray();
-
-    // Top recent claims
-    var recentClaims = claims.OrderByDescending(c => c.SubmissionDate).Take(8).ToList();
-
-    var statusLabelsJson = JsonSerializer.Serialize(statusGroups.Select(s => s.Status));
-    var statusCountsJson = JsonSerializer.Serialize(statusGroups.Select(s => s.Count));
-    var monthlyLabelsJson = JsonSerializer.Serialize(monthlyLabels);
-    var monthlyTotalsJson = JsonSerializer.Serialize(monthlyTotals);
+    // Claim statistics
+    var totalClaims = Model?.Count() ?? 0;
+    var verifiedClaims = Model?.Count(c => c.Status == ClaimSystem.Models.Claims.status.Verefied) ?? 0;
+    var pendingClaims = Model?.Count(c => c.Status == ClaimSystem.Models.Claims.status.Submitted) ?? 0;
+    var approvedClaims = Model?.Count(c => c.Status == ClaimSystem.Models.Claims.status.Approved) ?? 0;
+    var rejectedClaims = Model?.Count(c => c.Status == ClaimSystem.Models.Claims.status.Rejected || c.Status == ClaimSystem.Models.Claims.status.Decline) ?? 0;
+    var totalAmount = Model?.Sum(c => c.HoursWorked * (double)c.HourlyRate) ?? 0;
 }
 
-<style>
-    /* Small custom polish to make cards look modern */
-    .stat-card {
-        border-radius: 12px;
-        padding: 18px;
-        box-shadow: 0 6px 18px rgba(22,28,45,0.06);
-    }
+<h2 class="mb-4">📊 HR Dashboard - Claims Overview & Employee Management</h2>
 
-    .stat-value {
-        font-size: 1.75rem;
-        font-weight: 700;
-    }
+@if (ViewBag.ErrorMessage != null)
+{
+    <div class="alert alert-danger">@ViewBag.ErrorMessage</div>
+}
 
-    .chart-card {
-        min-height: 260px;
-    }
-
-    .table-avatar {
-        width: 36px;
-        height: 36px;
-        border-radius: 50%;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        background: rgba(0,0,0,0.06);
-        margin-right: 8px;
-    }
-</style>
-
-<div class="container-fluid py-4">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h2 class="mb-0">📊 Monthly Contract Claim System — Dashboard</h2>
-        <div>
-            <a asp-action="CreateClaim" class="btn btn-success me-2"><i class="bi bi-plus-circle"></i> Add New Claim</a>
-            <a asp-controller="Login" asp-action="HrExportCsv" class="btn btn-outline-primary"><i class="bi bi-download"></i> Export CSV</a>
-        </div>
+<!-- Claims Overview Cards -->
+<div class="d-flex flex-wrap gap-4 mt-3">
+    <div class="flex-fill p-4 rounded shadow-sm bg-light">
+        <h5>Total Claims</h5>
+        <p class="fs-3 fw-bold text-primary">@totalClaims</p>
     </div>
-
-    @if (ViewBag.ErrorMessage != null)
-    {
-        <div class="alert alert-danger">@ViewBag.ErrorMessage</div>
-    }
-
-    <!-- Top stats -->
-    <div class="row g-3">
-        <div class="col-12 col-md-3">
-            <div class="stat-card bg-white p-3 h-100">
-                <small class="text-muted">Total Claims</small>
-                <div class="d-flex align-items-center justify-content-between mt-2">
-                    <div>
-                        <div class="stat-value text-primary">@totalClaims</div>
-                        <small class="text-muted">All-time</small>
-                    </div>
-                    <i class="bi bi-people-fill fs-2 text-primary"></i>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-6 col-md-2">
-            <div class="stat-card bg-white p-3 h-100">
-                <small class="text-muted">Verified</small>
-                <div class="stat-value text-success mt-1">@verifiedClaims</div>
-            </div>
-        </div>
-
-        <div class="col-6 col-md-2">
-            <div class="stat-card bg-white p-3 h-100">
-                <small class="text-muted">Pending</small>
-                <div class="stat-value text-warning mt-1">@pendingClaims</div>
-            </div>
-        </div>
-
-        <div class="col-6 col-md-2">
-            <div class="stat-card bg-white p-3 h-100">
-                <small class="text-muted">Approved</small>
-                <div class="stat-value text-primary mt-1">@approvedClaims</div>
-            </div>
-        </div>
-
-        <div class="col-6 col-md-3">
-            <div class="stat-card bg-white p-3 h-100">
-                <small class="text-muted">Total Amount</small>
-                <div class="stat-value text-danger mt-1">R @String.Format("{0:N2}", totalAmount)</div>
-                <small class="text-muted">(Hours × Rate)</small>
-            </div>
-        </div>
+    <div class="flex-fill p-4 rounded shadow-sm" style="background-color: #d1e7dd;">
+        <h5>Verified Claims</h5>
+        <p class="fs-3 fw-bold text-success">@verifiedClaims</p>
     </div>
-
-    <!-- Charts row -->
-    <div class="row g-3 mt-3">
-        <div class="col-12 col-lg-4">
-            <div class="stat-card chart-card bg-white p-3">
-                <h6 class="mb-3">Claims by Status</h6>
-                <canvas id="statusDonut" aria-label="Status distribution"></canvas>
-                <div class="mt-2 small text-muted">Showing counts per status.</div>
-            </div>
-        </div>
-
-        <div class="col-12 col-lg-8">
-            <div class="stat-card chart-card bg-white p-3">
-                <h6 class="mb-3">Claims Amount — Last 6 months</h6>
-                <canvas id="monthlyLine" aria-label="Monthly totals"></canvas>
-                <div class="mt-2 small text-muted">Trends for amount claimed per month.</div>
-            </div>
-        </div>
+    <div class="flex-fill p-4 rounded shadow-sm" style="background-color: #fff3cd;">
+        <h5>Pending Claims</h5>
+        <p class="fs-3 fw-bold text-warning">@pendingClaims</p>
     </div>
-
-    <!-- Recent claims + filters -->
-    <div class="row g-3 mt-3">
-        <div class="col-12 col-lg-8">
-            <div class="stat-card bg-white p-3">
-                <div class="d-flex justify-content-between align-items-center mb-2">
-                    <h6 class="mb-0">Recent Claims</h6>
-                    <div class="text-muted small">@DateTime.Now.ToString("dd MMM yyyy")</div>
-                </div>
-
-                @if (!recentClaims.Any())
-                {
-                    <div class="alert alert-info mb-0">No claims found.</div>
-                }
-                else
-                {
-                    <div class="table-responsive">
-                        <table class="table table-hover align-middle mb-0">
-                            <thead class="table-light">
-                                <tr>
-                                    <th>Claim ID</th>
-                                    <th>Lecturer</th>
-                                    <th>Module</th>
-                                    <th>Status</th>
-                                    <th>Month</th>
-                                    <th class="text-end">Amount</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var claim in recentClaims)
-                                {
-                                    var amount = claim.HoursWorked * (double)claim.HourlyRate;
-                                    <tr>
-                                        <td>@claim.ClaimID</td>
-                                        <td>
-                                            <div class="d-flex align-items-center">
-                                                <div class="table-avatar">@claim.Lecturer?.Name?.Substring(0, 1)</div>
-                                                <div>@claim.Lecturer?.Name</div>
-                                            </div>
-                                        </td>
-                                        <td>@claim.ModuleName</td>
-                                        <td>
-                                            <span class="badge rounded-pill
-                                                        @(claim.Status == ClaimSystem.Models.Claims.status.Approved ? "bg-success" :
-                                                                                                    claim.Status == ClaimSystem.Models.Claims.status.Submitted ? "bg-info" :
-                                                                                                    claim.Status == ClaimSystem.Models.Claims.status.Rejected || claim.Status == ClaimSystem.Models.Claims.status.Decline ? "bg-danger" :
-                                                                                                    claim.Status == ClaimSystem.Models.Claims.status.Verefied ? "bg-primary" :
-                                                                                                    "bg-secondary")">
-                                        @claim.Status
-                                    </span>
-                                </td>
-                                <td>@claim.SubmissionDate.ToString("MMM yyyy")</td>
-                                <td class="text-end">R @String.Format("{0:N2}", amount)</td>
-                            </tr>
-                                                        }
-                            </tbody>
-                        </table>
-                    </div>
-                }
-            </div>
-        </div>
-
-        <!-- Quick actions & legend -->
-        <div class="col-12 col-lg-4">
-            <div class="stat-card bg-white p-3 h-100 d-flex flex-column justify-content-between">
-                <div>
-                    <h6>⚙️ Quick Actions</h6>
-                    <div class="d-grid gap-2 mt-2">
-                        <a asp-action="CreateClaim" class="btn btn-success"> <i class="bi bi-plus-circle"></i> Add New Claim</a>
-                        <a asp-controller="Approve" asp-action="Verify" class="btn btn-warning text-white"> <i class="bi bi-check2-circle"></i> Verify Claims</a>
-                        <a asp-controller="Report" asp-action="Generate" class="btn btn-outline-primary"> <i class="bi bi-bar-chart"></i> Generate Report</a>
-                    </div>
-                </div>
-
-                <div class="mt-3">
-                    <h6 class="mb-2">Legend</h6>
-                    <div class="small">
-                        <div><span class="badge bg-success">&nbsp;&nbsp;</span> Approved</div>
-                        <div><span class="badge bg-primary">&nbsp;&nbsp;</span> Verified</div>
-                        <div><span class="badge bg-info">&nbsp;&nbsp;</span> Submitted</div>
-                        <div><span class="badge bg-danger">&nbsp;&nbsp;</span> Rejected/Declined</div>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <div class="flex-fill p-4 rounded shadow-sm" style="background-color: #cfe2ff;">
+        <h5>Approved Claims</h5>
+        <p class="fs-3 fw-bold text-primary">@approvedClaims</p>
     </div>
-
-    <div class="text-end mt-3 small text-muted">Built on top of Bootstrap & Chart.js</div>
+    <div class="flex-fill p-4 rounded shadow-sm" style="background-color: #f8d7da;">
+        <h5>Total Amount Claimed</h5>
+        <p class="fs-3 fw-bold text-danger">R @totalAmount.ToString("N2")</p>
+    </div>
 </div>
 
-<!-- Scripts: Chart.js via CDN -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
-    // Status donut
-    (function(){
-        var statusLabels = @Html.Raw(statusLabelsJson ?? "[]");
-        var statusCounts = @Html.Raw(statusCountsJson ?? "[]");
+<!-- Quick HR Actions -->
+<div class="mt-5">
+    <h3>⚙️ HR Quick Actions</h3>
+    <div class="d-flex gap-3 mt-3">
+        <a asp-controller="Login" asp-action="AddEmployee" class="btn btn-success">
+            <i class="bi bi-person-plus"></i> Add New Employee
+        </a>
+        <a asp-controller="Login" asp-action="EmployeeList" class="btn btn-info text-white">
+            <i class="bi bi-people"></i> View All Employees
+        </a>
+        <a asp-controller="Login" asp-action="HrExportCsv" class="btn btn-primary">
+            <i class="bi bi-file-earmark-spreadsheet"></i> Export CSV
+        </a>
+    </div>
+</div>
 
-        var ctx = document.getElementById('statusDonut').getContext('2d');
-        new Chart(ctx, {
-            type: 'doughnut',
-            data: {
-                labels: statusLabels,
-                datasets: [{
-                    data: statusCounts,
-                    // Colors left to Bootstrap defaults; Chart.js will auto-pick if not provided
-                    hoverOffset: 6
-                }]
-            },
-            options: {
-                plugins: { legend: { position: 'bottom' } },
-                maintainAspectRatio: false
-            }
-        });
-    })();
+<!-- Styles -->
+<style>
+    body {
+        background: linear-gradient(135deg, #e0f7fa 0%, #ffe0b2 100%);
+        min-height: 100vh;
+    }
 
-    // Monthly line
-    (function(){
-        var months = @Html.Raw(monthlyLabelsJson ?? "[]");
-        var totals = @Html.Raw(monthlyTotalsJson ?? "[]");
-        var ctx2 = document.getElementById('monthlyLine').getContext('2d');
-        new Chart(ctx2, {
-            type: 'line',
-            data: {
-                labels: months,
-                datasets: [{
-                    label: 'Amount (R)',
-                    data: totals,
-                    tension: 0.25,
-                    fill: true
-                }]
-            },
-            options: {
-                scales: {
-                    y: { beginAtZero: true }
-                },
-                plugins: { legend: { display: false } },
-                maintainAspectRatio: false
-            }
-        });
-    })();
-</script>
+    .card, .flex-fill {
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+        .card:hover, .flex-fill:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+</style>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">

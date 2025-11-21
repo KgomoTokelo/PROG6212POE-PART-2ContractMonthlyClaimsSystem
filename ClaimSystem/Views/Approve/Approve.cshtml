@@ -3,16 +3,16 @@
 @{
     ViewData["Title"] = "Approve Claims";
 }
+
 <h5>Approval Guidelines</h5>
 <div class="alert alert-info">
     <ul>
-        <li><strong>STEM Departments:</strong> Minimum <strong>4 hours</strong> required to approve claims.</li>
-        <li><strong>Non-STEM Departments:</strong> Minimum <strong>3 hours</strong> required to approve claims.</li>
+        <li><strong>STEM Departments:</strong> Minimum <strong>4 hours</strong> required to approve claims automatically.</li>
+        <li><strong>Non-STEM Departments:</strong> Minimum <strong>3 hours</strong> required to approve claims automatically.</li>
     </ul>
 </div>
 
 <h2 class="mb-4">Claims Pending Approval</h2>
-
 
 <div class="row">
     @if (Model == null || !Model.Any())
@@ -26,11 +26,20 @@
         @foreach (var claim in Model)
         {
             var total = claim.HoursWorked * claim.HourlyRate;
+
+            bool isStem = claim.Lecturer.Department.ToLower().Contains("stem");
+            bool autoApproved = (isStem && claim.HoursWorked >= 4) ||
+            (!isStem && claim.HoursWorked >= 3);
+
             <div class="col-md-4 mb-4">
                 <div class="card shadow-sm h-100">
                     <div class="card-body text-center">
+
+                        @* Photo *@
                         <img src="https://via.placeholder.com/100"
                              class="rounded-circle mb-2" alt="Lecturer Pic">
+
+                        @* Basic Fields *@
                         <h5 class="card-title">@claim.Lecturer.Name</h5>
                         <p><strong>Amount:</strong> R @total</p>
                         <p><strong>Rate:</strong> R @claim.HourlyRate</p>
@@ -40,22 +49,47 @@
                         <p><strong>Status:</strong> @claim.Status</p>
                         <p><strong>Hours:</strong> @claim.HoursWorked</p>
 
+                        @* AUTO-APPROVE BADGE *@
+                        @if (autoApproved)
+                        {
+                            <p>
+                                <span class="badge bg-success">
+                                    Auto-approved by system ✓
+                                </span>
+                            </p>
+                        }
+
                         <div class="d-flex justify-content-center gap-2">
-                            <!-- Approve Button -->
+
+                            @* Approve Button (manual override allowed) *@
                             <form asp-action="Approve" asp-route-id="@claim.ClaimID" method="post" style="display:inline;">
-                                <button type="submit" class="btn btn-success btn-sm">Approve</button>
+                                <button type="submit" class="btn btn-success btn-sm">
+                                    Approve
+                                </button>
                             </form>
 
-                            <!-- Decline Button -->
-                            <button type="button" class="decline-btn btn btn-danger btn-sm">Decline</button>
+                            @* Decline Button *@
+                            <button type="button" class="decline-btn btn btn-danger btn-sm">
+                                Decline
+                            </button>
                         </div>
 
-                        <!-- Hidden Comment Form for Decline -->
-                        <form asp-action="Decline" asp-route-id="@claim.ClaimID" method="post" class="decline-comment-form mt-2" style="display:none;">
-                            <textarea name="Comments" placeholder="Enter reason for decline..." required
+                        @* Hidden Decline Reason *@
+                        <form asp-action="Decline" asp-route-id="@claim.ClaimID"
+                              method="post"
+                              class="decline-comment-form mt-2"
+                              style="display:none;">
+
+                            <textarea name="Comments"
+                              placeholder="Enter reason for decline..."
+                              required
                               style="width: 100%; border-radius:5px; border:1px solid #ccc; padding:5px; resize:none;"></textarea>
-                            <button type="submit" class="btn btn-danger btn-sm mt-1">Confirm Decline</button>
+
+                            <button type="submit" class="btn btn-danger btn-sm mt-1">
+                                Confirm Decline
+                            </button>
                         </form>
+
                     </div>
                 </div>
             </div>

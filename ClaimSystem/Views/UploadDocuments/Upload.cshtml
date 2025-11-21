@@ -11,30 +11,30 @@
                 <h4 class="card-title text-center mb-4">📎 Upload Supporting Document</h4>
 
                 <form asp-action="Upload" method="post" enctype="multipart/form-data">
-                    <!-- Claim ID -->
+                  
                     <div class="form-group mb-3">
                         <label asp-for="ClaimID" class="form-label">Claim ID</label>
                         <input asp-for="ClaimID" class="form-control" placeholder="Enter Claim ID" />
                         <span asp-validation-for="ClaimID" class="text-danger"></span>
                     </div>
-                    <!-- lecturer -->
+                    
 
 
 
-                    <!-- File Upload -->
+                 
                     <div class="form-group mb-3">
                         <label for="fileUpload" class="form-label">Select File</label>
                         <input type="file" class="form-control" id="fileUpload" name="fileUpload" />
                         <small class="text-muted">Accepted formats: PDF, DOCX, JPG, PNG</small>
                     </div>
 
-                    <!-- Upload Date (auto-filled for prototype) -->
+                  
                     <div class="form-group mb-3">
                         <label asp-for="UploadDate" class="form-label">Upload Date</label>
                         <input asp-for="UploadDate" class="form-control" type="date" value="@DateTime.Now.ToString("yyyy-MM-dd")" />
                     </div>
 
-                    <!-- Action Buttons -->
+                   
                     <div class="d-flex justify-content-between mt-4">
                         <a asp-controller="Claim" asp-action="Claim" class="btn btn-secondary">Cancel</a>
                         <button type="submit" class="btn btn-primary">Upload</button>

@@ -1,209 +1,151 @@
 ﻿using ClaimSystem.Models;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace ClaimSystem.Controllers
 {
     public class ClaimController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly IWebHostEnvironment _environment;
 
-        public ClaimController(ApplicationDbContext context)
+        public ClaimController(ApplicationDbContext context, IWebHostEnvironment environment)
         {
             _context = context;
+            _environment = environment;
         }
 
-        // View all claims for logged-in lecturer
+
         public async Task<IActionResult> Claim()
         {
-            try
-            {
-                // Get logged-in Identity user GUID
-                var identityUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-                if (string.IsNullOrEmpty(identityUserId))
-                {
-                    ViewBag.ErrorMessage = "User not logged in.";
-                    return View("Error");
-                }
+            var identityUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-                // Find local Users record
-                var user = await _context.Users
-                    .FirstOrDefaultAsync(u => u.IdentityUserId == identityUserId);
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.IdentityUserId == identityUserId);
+            if (user == null) return View("Error");
 
-                if (user == null)
-                {
-                    ViewBag.ErrorMessage = "User profile not found.";
-                    return View("Error");
-                }
+            var lecturer = await _context.Lecturers.FirstOrDefaultAsync(l => l.UsersId == user.Id);
+            if (lecturer == null) return View("Error");
 
-                // Find lecturer record linked to this user
-                var lecturer = await _context.Lecturers
-                    .FirstOrDefaultAsync(l => l.UsersId == user.Id);
+            var claims = await _context.Claims
+                .Where(c => c.LecturerID == lecturer.LecturerID)
+                .Include(c => c.Documents)
+                .ToListAsync();
 
-                if (lecturer == null)
-                {
-                    ViewBag.ErrorMessage = "Lecturer profile not found.";
-                    return View("Error");
-                }
-
-                // Fetch claims for this lecturer
-                var claims = await _context.Claims
-                    .Where(c => c.LecturerID == lecturer.LecturerID)
-                    .Include(c => c.Lecturer)
-                    .Include(c => c.Documents)
-                    .ToListAsync();
-
-                return View(claims);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error loading claims: {ex.Message}");
-                ViewBag.ErrorMessage = "An error occurred while loading your claims.";
-                return View("Error");
-            }
+            return View(claims);
         }
 
-        // CreateClaim
+        
         [HttpGet]
         public async Task<IActionResult> CreateClaim()
         {
-            try
+            ViewBag.StatusList = Enum.GetValues(typeof(Claims.status))
+                .Cast<Claims.status>()
+                .Select(s => new SelectListItem { Text = s.ToString(), Value = s.ToString() })
+                .ToList();
+
+            var identityUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.IdentityUserId == identityUserId);
+            if (user == null) return View("Error");
+
+            var lecturer = await _context.Lecturers.FirstOrDefaultAsync(l => l.UsersId == user.Id);
+            if (lecturer == null) return View("Error");
+
+            var model = new Claims
             {
-                ViewBag.StatusList = Enum.GetValues(typeof(Claims.status))
-                    .Cast<Claims.status>()
-                    .Select(s => new SelectListItem { Text = s.ToString(), Value = s.ToString() })
-                    .ToList();
+                LecturerID = lecturer.LecturerID,
+                Lecturer = lecturer,
+                Status = Claims.status.Submitted,
+                ModuleName = lecturer.Department,      
+                HourlyRate = lecturer.DefaultRatePerJob,
+                SubmissionDate = DateTime.Now
+            };
 
-                var identityUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-                var user = await _context.Users.FirstOrDefaultAsync(u => u.IdentityUserId == identityUserId);
-                if (user == null)
-                {
-                    ViewBag.ErrorMessage = "User profile not found.";
-                    return View("Error");
-                }
-
-                var lecturer = await _context.Lecturers.FirstOrDefaultAsync(l => l.UsersId == user.Id);
-                if (lecturer == null)
-                {
-                    ViewBag.ErrorMessage = "Lecturer profile not found.";
-                    return View("Error");
-                }
-
-                var model = new Claims
-                {
-                    LecturerID = lecturer.LecturerID,
-                    Status = Claims.status.Submitted,
-                    Lecturer = lecturer
-                
-                    
-                };
-
-                return View(model);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error preparing CreateClaim view: {ex.Message}");
-                ViewBag.ErrorMessage = "An error occurred while preparing the claim form.";
-                return View("Error");
-            }
+            return View(model);
         }
 
-        //  CreateClaim
+       
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateClaim(Claims model)
+        public async Task<IActionResult> CreateClaim(Claims model, IFormFile fileUpload)
         {
-            try
-            {
-                var identityUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-                var user = await _context.Users.FirstOrDefaultAsync(u => u.IdentityUserId == identityUserId);
-                if (user == null)
-                {
-                    ViewBag.ErrorMessage = "User profile not found.";
-                    return View("Error");
-                }
+            ViewBag.StatusList = Enum.GetValues(typeof(Claims.status))
+                .Cast<Claims.status>()
+                .Select(s => new SelectListItem { Text = s.ToString(), Value = s.ToString() })
+                .ToList();
 
-                var lecturer = await _context.Lecturers.FirstOrDefaultAsync(l => l.UsersId == user.Id);
-                if (lecturer == null)
-                {
-                    ViewBag.ErrorMessage = "Lecturer profile not found.";
-                    return View("Error");
-                }
-
-                model.LecturerID = lecturer.LecturerID;
-
-                if (ModelState.IsValid)
-                {
-                    _context.Claims.Add(model);
-                    await _context.SaveChangesAsync();
-                    TempData["SuccessMessage"] = "Claim submitted successfully!";
-                    return RedirectToAction("Claim");
-                }
-
-                ViewBag.StatusList = Enum.GetValues(typeof(Claims.status))
-                    .Cast<Claims.status>()
-                    .Select(s => new SelectListItem { Text = s.ToString(), Value = s.ToString() })
-                    .ToList();
-
+            if (!ModelState.IsValid)
                 return View(model);
-            }
-            catch (DbUpdateException dbEx)
+
+            var identityUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.IdentityUserId == identityUserId);
+            if (user == null) return View("Error");
+
+            var lecturer = await _context.Lecturers.FirstOrDefaultAsync(l => l.UsersId == user.Id);
+            if (lecturer == null) return View("Error");
+
+            model.LecturerID = lecturer.LecturerID;
+
+            // Save claim
+            _context.Claims.Add(model);
+            await _context.SaveChangesAsync();
+
+           
+            if (fileUpload != null && fileUpload.Length > 0)
             {
-                Console.WriteLine($"Database error: {dbEx.Message}");
-                ViewBag.ErrorMessage = "A database error occurred while saving your claim.";
-                return View("Error");
+                string[] allowedExtensions = { ".pdf", ".docx", ".jpg", ".jpeg", ".png" };
+                var extension = Path.GetExtension(fileUpload.FileName).ToLower();
+
+                if (!allowedExtensions.Contains(extension))
+                {
+                    ModelState.AddModelError("", "Invalid file format.");
+                    return View(model);
+                }
+
+                var uploadsFolder = Path.Combine(_environment.WebRootPath, "uploads");
+                if (!Directory.Exists(uploadsFolder))
+                    Directory.CreateDirectory(uploadsFolder);
+
+                string uniqueFileName = $"{Guid.NewGuid()}{extension}";
+                string fullPath = Path.Combine(uploadsFolder, uniqueFileName);
+
+                using (var stream = new FileStream(fullPath, FileMode.Create))
+                {
+                    await fileUpload.CopyToAsync(stream);
+                }
+
+                var doc = new UploadDocuments
+                {
+                    ClaimID = model.ClaimID,
+                    FileName = fileUpload.FileName,
+                    FilePath = "/uploads/" + uniqueFileName,
+                    UploadDate = DateTime.Now
+                };
+
+                _context.UploadDocuments.Add(doc);
+                await _context.SaveChangesAsync();
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Unexpected error: {ex.Message}");
-                ViewBag.ErrorMessage = "An unexpected error occurred while submitting your claim.";
-                return View("Error");
-            }
+
+            TempData["Success"] = "Claim created successfully!";
+            return RedirectToAction("Claim");
         }
 
-        // View individual claim
+        
         public async Task<IActionResult> Views(int id)
         {
-            try
-            {
-                if (id == 0) return NotFound();
+            var claim = await _context.Claims
+                .Include(c => c.Lecturer)
+                .Include(c => c.Documents)
+                .FirstOrDefaultAsync(c => c.ClaimID == id);
 
-                var identityUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-                var user = await _context.Users.FirstOrDefaultAsync(u => u.IdentityUserId == identityUserId);
-                if (user == null)
-                {
-                    ViewBag.ErrorMessage = "User profile not found.";
-                    return View("Error");
-                }
+            if (claim == null)
+                return NotFound();
 
-                var lecturer = await _context.Lecturers.FirstOrDefaultAsync(l => l.UsersId == user.Id);
-                if (lecturer == null)
-                {
-                    ViewBag.ErrorMessage = "Lecturer profile not found.";
-                    return View("Error");
-                }
-
-                var claim = await _context.Claims
-                    .Include(c => c.Lecturer)
-                    .Include(c => c.Documents)
-                    .FirstOrDefaultAsync(c => c.ClaimID == id && c.LecturerID == lecturer.LecturerID);
-
-                if (claim == null) return NotFound();
-
-                return View(claim);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error loading claim details: {ex.Message}");
-                ViewBag.ErrorMessage = "An error occurred while loading the claim details.";
-                return View("Error");
-            }
+            return View(claim);
         }
     }
 }

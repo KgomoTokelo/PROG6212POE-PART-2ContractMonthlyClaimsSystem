@@ -98,7 +98,7 @@ namespace ClaimSystem.Models
             }
 
             // 
-            var manEmail = "cm@site.com";
+            var manEmail = "pm@site.com";
             var manUser = await userManager.FindByEmailAsync(manEmail);
             if (manUser == null)
             {
@@ -109,7 +109,7 @@ namespace ClaimSystem.Models
                     EmailConfirmed = true
                 };
 
-                await userManager.CreateAsync(manUser, "Cm@123!");
+                await userManager.CreateAsync(manUser, "Pm@123!");
                 await userManager.AddToRoleAsync(manUser, "Manager");
 
                 context.Users.Add(new Users
@@ -121,7 +121,7 @@ namespace ClaimSystem.Models
                     DefaultRatePerJob = 0,
                     RoleName = "Manager",
                     Email = manEmail,
-                    Password = "Cm@123!"
+                    Password = "Pm@123!"
                 });
 
                 await context.SaveChangesAsync();

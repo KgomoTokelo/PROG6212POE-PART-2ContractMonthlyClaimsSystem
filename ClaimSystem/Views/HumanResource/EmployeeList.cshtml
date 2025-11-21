@@ -8,7 +8,7 @@
 
 <a asp-action="AddEmployee" class="btn btn-primary mb-3">Add New Employee</a>
 
-<table class="table">
+<table class="table table-striped table-bordered">
     <thead>
         <tr>
             <th>Name</th>
@@ -16,6 +16,7 @@
             <th>Department</th>
             <th>Default Rate (R)</th>
             <th>Role</th>
+            <th>Actions</th> 
         </tr>
     </thead>
     <tbody>
@@ -27,6 +28,17 @@
                 <td>@emp.Department</td>
                 <td>@emp.DefaultRatePerJob.ToString("F2")</td>
                 <td>@emp.RoleName</td>
+                <td>
+                    <a asp-controller="User" asp-action="View" asp-route-id="@emp.Id" class="btn btn-info btn-sm">View</a>
+                    <a asp-controller="User" asp-action="Edit" asp-route-id="@emp.Id" class="btn btn-warning btn-sm">Edit</a>
+                    <form asp-controller="User" asp-action="Delete" asp-route-id="@emp.Id" method="post" style="display:inline">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-danger btn-sm"
+                                onclick="return confirm('Are you sure you want to delete this employee?');">
+                            Delete
+                        </button>
+                    </form>
+                </td>
             </tr>
         }
     </tbody>

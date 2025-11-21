@@ -112,9 +112,9 @@ namespace ABCRetailers.Controllers
                         var lecturer = new Lecturer
                         {
                             UsersId = profile.Id,
-                            Name = model.Name,            // required
-                            Surname = model.Surname,      // required
-                            Email = model.Email,          // required
+                            Name = model.Name,            
+                            Surname = model.Surname,      
+                            Email = model.Email,         
                             Department = model.Department,
                             DefaultRatePerJob = model.DefaultRatePerJob
 

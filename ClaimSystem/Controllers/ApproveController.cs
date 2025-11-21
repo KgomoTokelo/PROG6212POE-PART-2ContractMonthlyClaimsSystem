@@ -194,7 +194,7 @@ namespace ClaimSystem.Controllers
                         continue;
                     }
 
-                    // All rules passed → Auto verify
+                    // All rules passed Auto verify
                     claim.Status = Claims.status.Verefied;
                     claim.Comments = "Automatically verified according to guidelines.";
                 }

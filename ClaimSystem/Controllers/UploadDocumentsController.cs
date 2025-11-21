@@ -1,5 +1,6 @@
 ﻿using ClaimSystem.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.StaticFiles;
 
 namespace ClaimSystem.Controllers
 {
@@ -111,6 +112,35 @@ namespace ClaimSystem.Controllers
                 ViewBag.ErrorMessage = "An error occurred while loading the success page.";
                 return View("Error"); // Make sure you have an Error.cshtml view
             }
+        }
+
+        public async Task<IActionResult> Download(int id)
+        {
+            // Find the document by its ID
+            var document = await _context.UploadDocuments.FindAsync(id);
+            if (document == null)
+            {
+                return NotFound();
+            }
+
+            // Build the full file path
+            var filePath = Path.Combine(_environment.WebRootPath, document.FilePath.TrimStart('/').Replace("/", Path.DirectorySeparatorChar.ToString()));
+
+            if (!System.IO.File.Exists(filePath))
+            {
+                return NotFound();
+            }
+
+            // Detect MIME type based on file extension
+            var provider = new FileExtensionContentTypeProvider();
+            if (!provider.TryGetContentType(filePath, out string contentType))
+            {
+                contentType = "application/octet-stream"; // default fallback
+            }
+
+            var fileBytes = await System.IO.File.ReadAllBytesAsync(filePath);
+
+            return File(fileBytes, contentType, document.FileName);
         }
     }
 }

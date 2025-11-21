@@ -26,7 +26,8 @@ This web application allows lecturers to submit claims, which can then be verifi
 - Identity Framework 
 - SQL Database(SSMS)  
 
-Role                      Email          Password 
+##Role                    **Email**          **Password** 
+
 **Human Resource**        hr@site.com     Hr@123!  
 **Programme Coordinator** cod@site.com    Cod@123!  
 **Programme Manager**     pm@site.com     Pm@123!   

@@ -67,11 +67,11 @@ wwwroot\uploads\250321e5-0627-48ee-86f2-f2319554fc31.pdf
 wwwroot\uploads\3c47ed55-a12d-42d0-98be-2029ebd35ea5.pdf
 wwwroot\uploads\5ef672ac-fd16-4fcf-9b57-056e6821b8ec.pdf
 wwwroot\uploads\631f5b7f-202c-4412-861f-7b7fa3f8b83e.pdf
-wwwroot\uploads\67da7e64-dfb1-49f6-a521-f5094107402e.jpg
 wwwroot\uploads\82ad3a5c-f412-4154-815e-e9667947b869.pdf
 wwwroot\uploads\856fc82b-2b33-4eba-9dd4-0fa3ba631860.pdf
 wwwroot\uploads\c1cacd16-cfa2-4ddb-b339-40edd1f966f8.pdf
 wwwroot\uploads\cca09a92-9ebe-43d3-8f44-a2499fe4c26a.jpg
+wwwroot\uploads\67da7e64-dfb1-49f6-a521-f5094107402e.jpg
 wwwroot\uploads\ebf90dec-f81e-4163-9c04-c5c8c93b96aa.png
 C:\Users\lab_services_student\Desktop\PROG6212POE-PART-2ContractMonthlyClaimsSystem\ClaimSystem\wwwroot\css\site.css
 C:\Users\lab_services_student\Desktop\PROG6212POE-PART-2ContractMonthlyClaimsSystem\ClaimSystem\wwwroot\favicon.ico

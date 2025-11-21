@@ -18,7 +18,7 @@ namespace ClaimSystem.Controllers
             _context = context;
         }
 
-        // GET: Users/Edit/5
+        
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -32,7 +32,7 @@ namespace ClaimSystem.Controllers
                 return NotFound();
             }
 
-            return View(user);
+            return View("~/Views/HumanResource/Edit.cshtml", user);
         }
 
 
@@ -92,7 +92,7 @@ namespace ClaimSystem.Controllers
                 return NotFound();
             }
 
-            return View(user); 
+            return View("~/Views/HumanResource/Delete.cshtml", user); 
         }
 
      
@@ -122,7 +122,7 @@ namespace ClaimSystem.Controllers
                 return NotFound();
             }
 
-            return View(user);
+            return View("~/Views/HumanResource/View.cshtml", user);
         }
     }
 }

@@ -22,8 +22,8 @@ namespace ClaimSystem.Models
             context.Database.Migrate();
 
             // 
-            string[] roles = { "HumanResource", "Lecturer", "Coordinator", "Manager" }; 
-         
+            string[] roles = { "HumanResource", "Lecturer", "Coordinator", "Manager" };
+
 
             foreach (var roleName in roles)
             {
@@ -127,7 +127,7 @@ namespace ClaimSystem.Models
                 await context.SaveChangesAsync();
             }
 
-            // 
+
             var LecturerEmail = "Lec@site.com";
             var LecturerUser = await userManager.FindByEmailAsync(LecturerEmail);
             if (LecturerUser == null)
@@ -142,7 +142,7 @@ namespace ClaimSystem.Models
                 await userManager.CreateAsync(LecturerUser, "Lec@123!");
                 await userManager.AddToRoleAsync(LecturerUser, "Lecturer");
 
-                context.Users.Add(new Users
+                var userRecord = new Users
                 {
                     IdentityUserId = LecturerUser.Id,
                     Name = "John",
@@ -152,11 +152,27 @@ namespace ClaimSystem.Models
                     RoleName = "Lecturer",
                     Email = LecturerEmail,
                     Password = "Lec@123!"
+                };
 
-                });
-
+                context.Users.Add(userRecord);
                 await context.SaveChangesAsync();
+
+                // Now add the Lecturer record linked to the Users table
+                var lecturerRecord = new Lecturer
+                {
+                    Name = userRecord.Name,
+                    Surname = userRecord.Surname,
+                    Department = userRecord.Department,
+                    DefaultRatePerJob = userRecord.DefaultRatePerJob,
+                    Email = userRecord.Email,
+                    UsersId = userRecord.Id // link to Users table
+                };
+
+
+
             }
         }
     }
 }
+
+

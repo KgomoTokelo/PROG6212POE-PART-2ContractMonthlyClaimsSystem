@@ -11,10 +11,10 @@ namespace ClaimSystem
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Connect to SQLite
+            // Connect to SQL
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-
+            //idendtity
             builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = false)
                 .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
@@ -47,7 +47,7 @@ namespace ClaimSystem
             app.UseStaticFiles();
 
             app.UseRouting();
-            app.UseAuthentication();//
+            app.UseAuthentication();
             app.UseAuthorization();
             
             
@@ -56,7 +56,7 @@ namespace ClaimSystem
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");
-            app.MapRazorPages(); // Razor Pages endpoint
+            app.MapRazorPages(); 
 
             app.Run();
         }

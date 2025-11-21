@@ -6,7 +6,7 @@ namespace ClaimSystem.Models
     {
         [Key]
         public int DocumentID { get; set; }   // PK
-        public int ClaimID { get; set; }      // FK to Claim
+        public int ClaimID { get; set; }      // FK 
         public string FileName { get; set; }
         public string FilePath { get; set; }
         public DateTime UploadDate { get; set; }

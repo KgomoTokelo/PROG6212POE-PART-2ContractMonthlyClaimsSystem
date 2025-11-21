@@ -7,7 +7,7 @@
 
 <h2>Verify Claims</h2>
 
-<!-- Guidelines Section -->
+@* Guidelines Section*@
 <div style="border: 1px solid #ccc; border-radius:10px; padding:15px; margin-bottom:20px; background-color:#f9f9f9;">
     <h4>Verification Guidelines</h4>
     <ul>
@@ -17,7 +17,7 @@
     </ul>
 </div>
 
-<!-- Verified Claims -->
+@* Verified Claims*@
 <h3>Verified Claims</h3>
 <div style="display: flex; gap: 20px; flex-wrap: wrap; margin-top: 10px;">
     @{
@@ -43,15 +43,14 @@
                     <p><strong>Status:</strong> <span class="badge bg-success">@claim.Status</span></p>
                     <p><em>@claim.Comments</em></p>
 
-                    <!-- Buttons -->
+                    @* verify and reject Buttons*@
                     <div style="margin-top:15px; display:flex; justify-content:center; gap:10px;">
-                        <!-- Manual Override: Reject -->
+                        
                         <form asp-action="Reject" method="post">
                             <input type="hidden" name="id" value="@claim.ClaimID" />
                             <button type="submit" class="btn btn-danger btn-sm">Reject</button>
                         </form>
 
-                        <!-- Manual Override: Verify (even if already verified) -->
                         <form asp-action="Verify" method="post">
                             <input type="hidden" name="id" value="@claim.ClaimID" />
                             <button type="submit" class="btn btn-success btn-sm">Verify</button>
@@ -63,7 +62,7 @@
     }
 </div>
 
-<!-- Failed / Rejected Claims -->
+@* Rejected Claims*@
 <h3 style="margin-top: 40px;">Failed / Rejected Claims</h3>
 <div style="display: flex; gap: 20px; flex-wrap: wrap; margin-top: 10px;">
     @{
@@ -89,15 +88,15 @@
                     <p><strong>Status:</strong> <span class="badge bg-danger">@claim.Status</span></p>
                     <p><em>@claim.Comments</em></p>
 
-                    <!-- Buttons -->
+                    @*Buttons*@
                     <div style="margin-top:15px; display:flex; justify-content:center; gap:10px;">
-                        <!-- Manual Override: Reject again -->
+                       
                         <form asp-action="Reject" method="post">
                             <input type="hidden" name="id" value="@claim.ClaimID" />
                             <button type="submit" class="btn btn-danger btn-sm">Reject</button>
                         </form>
 
-                        <!-- Manual Override: Verify -->
+                        
                         <form asp-action="Verify" method="post">
                             <input type="hidden" name="id" value="@claim.ClaimID" />
                             <button type="submit" class="btn btn-success btn-sm">Verify</button>

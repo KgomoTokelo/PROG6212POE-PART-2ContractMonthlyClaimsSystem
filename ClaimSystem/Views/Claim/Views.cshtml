@@ -11,7 +11,7 @@
         </div>
         <div class="card-body">
             <div class="row mb-3">
-                <!-- Lecturer Info -->
+                @*Lecturer Information*@
                 <div class="col-md-3 text-center">
                     <img src="https://via.placeholder.com/120"
                          class="rounded-circle mb-3" alt="Lecturer Pic">
@@ -19,7 +19,7 @@
                     <p class="text-muted">@Model.Lecturer?.Department</p>
                 </div>
 
-                <!-- Claim Details -->
+                @*Claim Details*@
                 <div class="col-md-9">
                     <dl class="row">
                         <dt class="col-sm-4">Claim ID</dt>
@@ -86,7 +86,7 @@
                                 <td>@doc.FileName</td>
                                 <td>@doc.UploadDate.ToString("yyyy-MM-dd HH:mm")</td>
                                 <td>
-                                    <!-- Updated download button -->
+                                    @*download button *@
                                     <a class="btn btn-sm btn-primary"
                                        asp-controller="UploadDocuments"
                                        asp-action="Download"
@@ -113,7 +113,7 @@ else
                 </a>
             </div>
 
-            <!-- Navigation buttons -->
+            @*Navigation buttons*@
             <div class="d-flex justify-content-between mt-4">
                 <a asp-action="Claim" class="btn btn-outline-secondary">
                     <i class="bi bi-arrow-left"></i> Back to List

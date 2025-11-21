@@ -4,7 +4,7 @@
     ViewBag.Title = "HR Dashboard";
     Layout = "~/Views/Shared/_Layout.cshtml";
 
-    // Claim statistics
+    // Claim
     var totalClaims = Model?.Count() ?? 0;
     var verifiedClaims = Model?.Count(c => c.Status == ClaimSystem.Models.Claims.status.Verefied) ?? 0;
     var pendingClaims = Model?.Count(c => c.Status == ClaimSystem.Models.Claims.status.Submitted) ?? 0;
@@ -20,7 +20,7 @@
     <div class="alert alert-danger">@ViewBag.ErrorMessage</div>
 }
 
-<!-- Claims Overview Cards -->
+@*Cards*@
 <div class="d-flex flex-wrap gap-4 mt-3">
     <div class="flex-fill p-4 rounded shadow-sm bg-light">
         <h5>Total Claims</h5>
@@ -44,7 +44,7 @@
     </div>
 </div>
 
-<!-- Quick HR Actions -->
+
 <div class="mt-5">
     <h3>⚙️ HR Quick Actions</h3>
     <div class="d-flex gap-3 mt-3">
@@ -60,7 +60,7 @@
     </div>
 </div>
 
-<!-- Styles -->
+
 <style>
     body {
         background: linear-gradient(135deg, #e0f7fa 0%, #ffe0b2 100%);

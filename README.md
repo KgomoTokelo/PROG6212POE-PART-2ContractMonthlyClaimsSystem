@@ -16,14 +16,14 @@ This web application allows lecturers to submit claims, which can then be verifi
 2. **Submission:** Lecturers submit claims through the web interface.  
 3. **Verification:** Programme Coordinators review the claims and either verify or reject them.  
 4. **Approval:** Programme Managers review verified claims and either approve for payment or reject them.  
-5. **HR Oversight:** HR can manage employee information, track claims, and ensure compliance with organizational guidelines.  
+5. **HR Oversight:** HR can manage employee information, track claims, and add and delete users.  
 6. **Decline/Reject:** Any claim not meeting the required guidelines can be declined or rejected.
 
 ## Technologies Used
 - ASP.NET Core MVC  
 - C#  
-- Entity Framework Core  
-- SQLite Database  
+- Entity Framework Core
+- Identity Framework 
+- SQL Database(SSMS)  
 
-## License
-This project is open-source and free to use.
+
